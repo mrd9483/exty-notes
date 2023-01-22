@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import ApiError from './ApiError';
+import ApiError from './errors/ApiError';
 
 export default async function apiGlobal(req: NextApiRequest, res: NextApiResponse, actions: { [key: string]: () => Promise<void> }) {
     try {
@@ -14,7 +14,7 @@ export default async function apiGlobal(req: NextApiRequest, res: NextApiRespons
         if (err instanceof ApiError) {
             res.status(err.errorCode).send(err.message);
         } else {
-            res.status(500).send('Internal server error1');
+            res.status(500).send('Internal server error');
             console.error((err as Error));
         }
     }

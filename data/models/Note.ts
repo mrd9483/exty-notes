@@ -5,6 +5,7 @@ const noteSchema = new Schema({
     updated: { type: Date, default: Date.now },
     slug: String,
     note: String,
+    title: String
 });
 
 const Note = models.Note || model('Note', noteSchema);
