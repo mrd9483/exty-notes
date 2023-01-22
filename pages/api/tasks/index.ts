@@ -1,4 +1,4 @@
-import Note from '@/data/models/Note';
+import Task from '@/data/models/Task';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import DbConnection from '@/data/DbConnection';
 
@@ -9,16 +9,16 @@ export default async function handler(
     await DbConnection();
     switch (req.method) {
         case 'GET': {
-            const notes = await Note.find({}).populate('user');
-            res.status(200).json(notes);
+            const obj = await Task.find({}).populate('user');
+            res.status(200).json(obj);
             break;
         }
         case 'PUT':
             try {
-                const newNote = new Note(JSON.parse(req.body));
-                await newNote.save();
+                const obj = new Task(JSON.parse(req.body));
+                await obj.save();
 
-                res.status(200).json(newNote);
+                res.status(200).json(obj);
             } catch (error) {
                 res.status(500);
                 throw new Error('Save for note failed' + error);
