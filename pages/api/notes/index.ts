@@ -1,30 +1,22 @@
-import Note from '@/data/models/Note';
+import Notes from '@/data/models/Note';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import DbConnection from '@/data/DbConnection';
+import apiGlobal from '../../../utils/apiGlobal';
 
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
-    switch (req.method) {
-        case 'GET': {
-            const notes = await Note.find({}).populate('user');
-            res.status(200).json(notes);
-            break;
-        }
-        case 'PUT':
-            try {
-                const newNote = new Note(JSON.parse(req.body));
-                await newNote.save();
 
-                res.status(200).json(newNote);
-            } catch (error) {
-                res.status(500);
-                throw new Error('Save for note failed' + error);
-            }
-            break;
-        default:
-            res.status(405);
-    }
+    const GET = async () => {
+        const obj = await Notes.find({}).populate('user');
+        res.status(200).json(obj);
+    };
+
+    const PUT = async () => {
+        const obj = new Notes(req.body);
+        await obj.save();
+
+        res.status(200).json(obj);
+    };
+
+    await apiGlobal(req, res, { GET, PUT });
 }

@@ -1,30 +1,22 @@
 import Navigation from '@/data/models/Navigation';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import DbConnection from '@/data/DbConnection';
+import apiGlobal from '../../../utils/apiGlobal';
 
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
-    switch (req.method) {
-        case 'GET': {
-            const obj = await Navigation.find({}).populate('user');
-            res.status(200).json(obj);
-            break;
-        }
-        case 'PUT':
-            try {
-                const obj = new Navigation(JSON.parse(req.body));
-                await obj.save();
 
-                res.status(200).json(obj);
-            } catch (error) {
-                res.status(500);
-                throw new Error('Save for note failed' + error);
-            }
-            break;
-        default:
-            res.status(405);
-    }
+    const GET = async () => {
+        const obj = await Navigation.find({});
+        res.status(200).json(obj);
+    };
+
+    const PUT = async () => {
+        const obj = new Navigation(req.body);
+        await obj.save();
+
+        res.status(200).json(obj);
+    };
+
+    await apiGlobal(req, res, { GET, PUT });
 }

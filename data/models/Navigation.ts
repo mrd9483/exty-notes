@@ -1,16 +1,17 @@
 import { Schema, model, models } from 'mongoose';
 
-const navigationSubSchema = new Schema();
-
-const navigationSchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User', require: true },
+const navigationSubSchema = new Schema({
     updated: { type: Date, default: Date.now },
     title: String,
     note: { type: Schema.Types.ObjectId, ref: 'Notes', require: true },
+}, { _id: false });
+
+navigationSubSchema.add({
     navigation: [navigationSubSchema]
 });
 
-navigationSchema.add({
+const navigationSchema = new Schema({
+    user: { type: Schema.Types.ObjectId, ref: 'User', require: true },
     updated: { type: Date, default: Date.now },
     title: String,
     note: { type: Schema.Types.ObjectId, ref: 'Notes', require: true },
