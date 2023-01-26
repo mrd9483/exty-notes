@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import ApiError from './errors/ApiError';
+import mongoose, { Model } from 'mongoose';
+import ResourceNotFoundError from './errors/ResourceNotFoundError';
 
 export default async function apiGlobal(req: NextApiRequest, res: NextApiResponse, actions: { [key: string]: () => Promise<void> }) {
     try {
@@ -19,3 +21,21 @@ export default async function apiGlobal(req: NextApiRequest, res: NextApiRespons
         }
     }
 }
+
+function GetByIdGlobal<T> (model: Model<T>, res: NextApiResponse, id: string) {
+    return async () => {
+        if (!mongoose.isObjectIdOrHexString(id)) {
+            throw new ApiError('Id is not fomatted correctly', 400);
+        }
+
+        const obj = await model.findOne({ _id: id });
+
+        if (obj !== null) {
+            res.status(200).json(obj);
+        } else {
+            throw new ResourceNotFoundError();
+        }
+    };
+}
+
+export { GetByIdGlobal };

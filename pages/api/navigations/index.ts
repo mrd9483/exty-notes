@@ -6,8 +6,16 @@ import apiGlobal from '../../../utils/apiGlobal';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
 
+    const { userId } = req.query;
+
     const GET = async () => {
-        const obj = await Navigation.find({});
+        const query: any = {};
+
+        if (userId !== null) {
+            query.user = userId;
+        }
+
+        const obj = await Navigation.find(query).exec();
         res.status(200).json(obj);
     };
 

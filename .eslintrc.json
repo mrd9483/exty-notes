@@ -33,6 +33,7 @@
         "no-duplicate-imports":"error",
         "eol-last":"warn",
         "no-var":"error",
-        "eqeqeq":"error"
+        "eqeqeq":"error",
+        "react/prop-types": "off"
     }
 }

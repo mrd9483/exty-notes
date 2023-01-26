@@ -1,40 +1,22 @@
 /* eslint-disable react/prop-types */
-import { AppShell, Navbar, Header, Box, NavLink } from '@mantine/core';
+import { AppShell, Navbar, Header, Box, NavLink, Title } from '@mantine/core';
 import { ReactNode } from 'react';
+import { NextRouter, useRouter } from 'next/router';
 
 type Props = {
   children: ReactNode;
-  navigation: Array<JSON>;
-};
-
-const navigationBuilder = (navigation: Array<JSON>) => {
-  if (navigation.length === 0)
-    return null;
-
-  return (
-    <>
-      {navigation.map((n: any) => (
-        <NavLink key={n.id} label={n.title}>
-          {navigationBuilder(n.navigation)}
-        </NavLink>
-      ))}
-    </>
-  );
+  menu: ReactNode;
 };
 
 const Layout: React.FC<Props> = (props) => {
   return (
     <AppShell
       padding="md"
-      navbar={
-        <Navbar width={{ base: 300 }}>
-          <Box>
-            {navigationBuilder(props.navigation)}
-          </Box>
-        </Navbar>
-      }
+      navbar={<>{props.menu}</>}
       header={
-        <Header height={60} p="xs">{/* Header content */}</Header>
+        <Header height={60} p="xs">
+          <Title>Extynote</Title>
+        </Header>
       }
       styles={(theme) => ({
         main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },

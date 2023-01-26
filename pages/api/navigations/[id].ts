@@ -1,15 +1,17 @@
-import Navigation from '@/data/models/Navigation';
+import M from '@/data/models/Navigation';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import DbConnection from '@/data/DbConnection';
-import apiGlobal from '../../../utils/apiGlobal';
+import apiGlobal, { GetByIdGlobal } from '../../../utils/apiGlobal';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
 
-    const {id} = req.query;
+    const { id } = req.query;
+
+    const GET = GetByIdGlobal<typeof M>(M, res, id as string);
 
     const POST = async () => {
-        const obj = await Navigation.updateOne({_id:id}, {
+        const obj = await M.updateOne({ _id: id }, {
             updated: Date.now,
             title: req.body.title
         });
@@ -17,5 +19,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(obj);
     };
 
-    await apiGlobal(req, res, { POST });
+    await apiGlobal(req, res, { GET, POST });
 }
