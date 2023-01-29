@@ -1,23 +1,23 @@
-import { Schema, model, models } from 'mongoose';
+import { Schema, model, models, Document, Types } from 'mongoose';
 
-const navigationSubSchema = new Schema({
-    updated: { type: Date, default: Date.now },
-    title: String,
-    note: { type: Schema.Types.ObjectId, ref: 'Notes', require: true },
-}, { _id: false });
+interface INavigation {
+    user: string
+    updated: Date,
+    notes: Array<{
+        title: string;
+        note: Types.ObjectId
+    }>
+}
 
-navigationSubSchema.add({
-    navigation: [navigationSubSchema]
-});
+interface INavigationModel extends INavigation, Document { }
 
 const navigationSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', require: true },
     updated: { type: Date, default: Date.now },
-    title: String,
-    note: { type: Schema.Types.ObjectId, ref: 'Notes', require: true },
-    navigation: [navigationSubSchema]
+    notes: [new Schema({ title: String, note: { type: Schema.Types.ObjectId, ref: 'Notes', require: true } }, { _id: false })]
 });
 
-const Navigation = models.Navigation || model('Navigation', navigationSchema);
+const Navigation = models.Navigation || model<INavigationModel>('Navigation', navigationSchema);
 
 export default Navigation;
+export type { INavigation, INavigationModel };

@@ -29,5 +29,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(obj);
     };
 
-    await apiGlobal(req, res, { GET, POST });
+    const DELETE = async () => {
+        if (!mongoose.isObjectIdOrHexString(id)) {
+            throw new ApiError('Id is not fomatted correctly', 400);
+        }
+
+        const obj = await M.updateOne({ _id: id }, {
+            active: false
+        });
+
+        res.status(200).json(obj);
+    };
+
+    await apiGlobal(req, res, { GET, POST, DELETE });
 }
