@@ -1,9 +1,9 @@
 import NoteLayout from '@/components/NoteLayout';
-import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box } from '@mantine/core';
+import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box, Button, Center } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INavigation } from '@/data/models/Navigation';
 import { IconTrash } from '@tabler/icons';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { INote } from '@/data/models/Note';
 import { useRouter } from 'next/router';
 
@@ -24,15 +24,29 @@ type Props = {
 
 const Home: React.FC<Props> = (props) => {
     const router = useRouter();
-    
-    const [opened, setOpened] = useState(false);
 
-    const handleDelete = () => {
+    const [opened, setOpened] = useState(false);
+    const [idToDelete, setIdToDelete] = useState('');
+
+    const handleDeleteModal = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, id: string) => {
         setOpened(true);
+        setIdToDelete(id);
+        e.stopPropagation();
     };
 
     const handleNavigation = (id: string) => {
         router.push(`/notes/${id}`);
+    };
+
+    const handleClose = () => {
+        setIdToDelete('');
+        setOpened(false);
+    };
+
+    const handleDelete = async () => {
+        await fetch(`http://localhost:3000/api/notes/${idToDelete}`, {method:'DELETE'}).then(res => res.json());
+        handleClose();
+        router.replace(router.asPath);
     };
 
     return (
@@ -41,13 +55,13 @@ const Home: React.FC<Props> = (props) => {
                 <Grid>
                     {props.notes.map(n => (
                         <Grid.Col sx={{
-                            cursor:'pointer'
+                            cursor: 'pointer'
                         }} onClick={() => handleNavigation(n._id)} key={n._id} span={4}>
                             <Card withBorder shadow="sm" radius="md">
                                 <Card.Section withBorder inheritPadding py="xs">
                                     <Group position="apart">
                                         <Text weight={500}>{n.title}</Text>
-                                        <ActionIcon onClick={() => handleDelete()}>
+                                        <ActionIcon onClick={(e) => handleDeleteModal(e, n._id)}>
                                             <IconTrash size={18} />
                                         </ActionIcon>
                                     </Group>
@@ -64,13 +78,20 @@ const Home: React.FC<Props> = (props) => {
             </Container>
             <Modal
                 opened={opened}
-                onClose={() => setOpened(false)}
+                onClose={handleClose}
                 title="Delete?"
                 transition="fade"
                 transitionDuration={600}
                 transitionTimingFunction="ease"
             >
-                <Text weight={500}>Are you sure you would like to delete?</Text>
+
+                <Text align='center' weight={500} mb="xl">Are you sure you would like to delete?</Text>
+                <Center>
+                    <Group>
+                        <Button onClick={() => handleDelete()} color="red">Yes</Button>
+                        <Button variant="outline" onClick={() => handleClose()} color="red">No</Button>
+                    </Group>
+                </Center>
             </Modal>
         </NoteLayout>
     );
