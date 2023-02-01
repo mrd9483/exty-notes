@@ -7,6 +7,9 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=hunter2
+      - MONGO_DATA_DIR=/data/db # changed
+    volumes:
+      - ./dockerdata/db:/data/db
 
   mongo-express:
     image: mongo-express
@@ -19,5 +22,11 @@ services:
     depends_on:
       - "mongodb"
     restart: unless-stopped
-    links: 
+    links:
       - mongodb:mongodb
+
+  mailcatch:
+    image: dockage/mailcatcher:0.8.2
+    ports:
+      - "1080:1080"
+      - "1025:1025"

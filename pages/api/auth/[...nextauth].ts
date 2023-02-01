@@ -1,17 +1,15 @@
 import { NextApiHandler } from 'next';
 import NextAuth, { NextAuthOptions } from 'next-auth';
-import GitHubProvider from 'next-auth/providers/github';
 import EmailProvider from 'next-auth/providers/email';
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import clientPromise from '../../../lib/mongodb';
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
 export default authHandler;
 
 const options: NextAuthOptions = {
+    adapter: MongoDBAdapter(clientPromise),
     providers: [
-        GitHubProvider({
-            clientId: process.env.GITHUB_ID as string,
-            clientSecret: process.env.GITHUB_SECRET as string,
-        }),
         EmailProvider({
             server: {
                 host: process.env.SMTP_HOST,
