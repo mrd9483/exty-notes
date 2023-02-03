@@ -8,11 +8,16 @@ import { GetServerSideProps } from 'next';
 import { INote } from '@/data/models/Note';
 import { INavigation } from '@/data/models/Navigation';
 import { useForm } from '@mantine/form';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth/next';
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+    const session = await getServerSession(context.req, context.res, authOptions);
+    
     const { id } = context.query;
-
-    const resNavigation = await fetch('http://localhost:3000/api/navigations/user/63d559fbd82fcc2c546416e2');
+    
+    const resNavigation = await fetch(`http://localhost:3000/api/navigations/user/${session?.user.id}`);
     const dataNavigation = await resNavigation.json();
 
     const resNote = await fetch(`http://localhost:3000/api/notes/${id}`);

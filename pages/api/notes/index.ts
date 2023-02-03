@@ -13,6 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const PUT = async () => {
         const obj = new Notes(req.body);
+        obj.active = true;
         await obj.save();
 
         res.status(200).json(obj);

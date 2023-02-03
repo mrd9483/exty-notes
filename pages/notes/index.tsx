@@ -6,12 +6,16 @@ import { IconTrash } from '@tabler/icons';
 import { MouseEvent, useState } from 'react';
 import { INote } from '@/data/models/Note';
 import { useRouter } from 'next/router';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth/next';
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    const res = await fetch('http://localhost:3000/api/navigations/user/63d559fbd82fcc2c546416e2');
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const session = await getServerSession(context.req, context.res, authOptions);
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${session?.user.id}`);
     const data = await res.json();
 
-    const noteRes = await fetch('http://localhost:3000/api/notes/user/63d559fbd82fcc2c546416e2');
+    const noteRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/user/${session?.user.id}`);
     const noteData = await noteRes.json();
 
     return { props: { navigation: data, notes: noteData } };
@@ -44,7 +48,7 @@ const Home: React.FC<Props> = (props) => {
     };
 
     const handleDelete = async () => {
-        await fetch(`http://localhost:3000/api/notes/${idToDelete}`, {method:'DELETE'}).then(res => res.json());
+        await fetch(`http://localhost:3000/api/notes/${idToDelete}`, { method: 'DELETE' }).then(res => res.json());
         handleClose();
         router.replace(router.asPath);
     };
@@ -87,7 +91,7 @@ const Home: React.FC<Props> = (props) => {
 
                 <Text align='center' weight={500} mb="xl">Are you sure you would like to delete?</Text>
                 <Center>
-                    <Group>
+                    <Group position='apart'>
                         <Button onClick={() => handleDelete()} color="red">Yes</Button>
                         <Button variant="outline" onClick={() => handleClose()} color="red">No</Button>
                     </Group>

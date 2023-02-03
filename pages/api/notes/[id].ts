@@ -23,7 +23,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             note: req.body.note,
             slug: req.body.slug,
             user: req.body.user,
-            title: req.body.title
+            title: req.body.title,
+            active: true
         });
 
         res.status(200).json(obj);

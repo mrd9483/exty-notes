@@ -4,10 +4,10 @@ import EmailProvider from 'next-auth/providers/email';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import clientPromise from '../../../lib/mongodb';
 
-const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options);
+const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, authOptions);
 export default authHandler;
 
-const options: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
     adapter: MongoDBAdapter(clientPromise),
     providers: [
         EmailProvider({
@@ -27,26 +27,25 @@ const options: NextAuthOptions = {
     session: {
         strategy: 'jwt',
     },
-    logger: {
-        error(code, metadata) {
-            console.log({ type: 'inside error logger', code, metadata });
-        },
-        warn(code) {
-            console.log({ type: 'inside warn logger', code });
-        },
-        debug(code, metadata) {
-            console.log({ type: 'inside debug logger', code, metadata });
-        },
-    },
+
     callbacks: {
-        async session({ session, user, token }) {
+        session: async ({ session, token }) => {
             console.log(session);
             console.log(token);
 
-            session.userId = token.sub;
-            session.userEmail = token.email;
+            if (session?.user) {
+                session.user.id = token.sub;
+            }
 
             return session;
-        }
+        },
+        jwt: async ({ user, token }) => {
+            if (user) {
+                token.sub = user.id;
+            }
+            return token;
+        },
     }
 };
+
+export { authOptions };
