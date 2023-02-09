@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
 import { ITimeEntry } from '@/data/models/TimeEntry';
-import { ActionIcon, Button, Container, Grid, Group, NumberInput, Table, TextInput } from '@mantine/core';
+import { ActionIcon, Button, Container, Grid, Group, NumberInput, Select, Table, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
@@ -19,7 +19,7 @@ type Props = {
 const TimeEntryIndex: React.FC<Props> = () => {
     const [datePicker, setDatePicker] = useState<DateRangePickerValue>();
     const [data, setData] = useState<ITimeEntry[]>([]);
-
+    const [categories, setCategories] = useState(['test', 'test2']);
     const [addLoading, setAddLoading] = useState(false);
 
     const { data: session, status } = useSession();
@@ -29,12 +29,14 @@ const TimeEntryIndex: React.FC<Props> = () => {
         initialValues: {
             date: new Date(),
             hours: 0,
-            entry: ''
+            entry: '',
+            category: ''
         },
         validate: {
-            date: isNotEmpty('Date required'),
-            hours: isInRange({ min: 0.5, max: 24 }, 'Must be between 0.5 and 24 hours'),
-            entry: isNotEmpty('entry required')
+            date: isNotEmpty(),
+            category: isNotEmpty(),
+            hours: isInRange({ min: 0.5, max: 24 }),
+            entry: isNotEmpty()
         }
     });
 
@@ -66,14 +68,19 @@ const TimeEntryIndex: React.FC<Props> = () => {
     }, [status]);
 
     const handleAdd = async () => {
-        setAddLoading(true);
+        if (!form.validate().hasErrors) {
 
-        await saveEntry(session?.user.id as string, form.values.date, form.values.entry, form.values.hours)
-            .then(() => getEntries(session?.user.id, datePicker?.[0], datePicker?.[1])
-                .then((d) => {
-                    setData(d);
-                    setAddLoading(false);
-                }));
+            setAddLoading(true);
+
+            await saveEntry(session?.user.id as string, form.values.date, form.values.entry, form.values.hours, form.values.category)
+                .then(() => getEntries(session?.user.id, datePicker?.[0], datePicker?.[1])
+                    .then((d) => {
+                        setData(d);
+                        setAddLoading(false);
+                    }));
+
+            form.reset();
+        }
     };
 
     const handleDeleteEntry = async (_id: string) => {
@@ -92,7 +99,7 @@ const TimeEntryIndex: React.FC<Props> = () => {
                         <DateRangePicker mb="md" placeholder='Pick date range' value={datePicker} onChange={handleDatePicker} firstDayOfWeek='sunday' />
                     </Grid.Col>
                     <Grid.Col sm={2} span={4}>
-                        <Button sx={{ width: '100%' }} variant="outline" onClick={handleLastWeekButton}>Last Week</Button>
+                        <Button sx={{ width: '100%' }} variant="outline" onClick={handleLastWeekButton}>Current Week</Button>
                     </Grid.Col>
                 </Grid>
                 <Table withBorder withColumnBorders>
@@ -100,6 +107,7 @@ const TimeEntryIndex: React.FC<Props> = () => {
                         <tr>
                             <th style={{ width: 150 }}>Date</th>
                             <th style={{ width: 100 }}>Hours</th>
+                            <th style={{ width: 200 }}>Category</th>
                             <th>Entry</th>
                         </tr>
                     </thead>
@@ -108,6 +116,7 @@ const TimeEntryIndex: React.FC<Props> = () => {
                             <tr key={d._id}>
                                 <td>{format(new Date(d.date), 'MM/dd/yyyy')}</td>
                                 <td>{d.hours}</td>
+                                <td>{d.category}</td>
                                 <td>
                                     <Group position='apart'>
                                         {d.entry}
@@ -123,6 +132,18 @@ const TimeEntryIndex: React.FC<Props> = () => {
                         <tr>
                             <th><DatePicker clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" /></th>
                             <th><NumberInput {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" /></th>
+                            <th>
+                                <Select
+                                    {...form.getInputProps('category')}
+                                    getCreateLabel={(query) => `+ ${query}`}
+                                    searchable
+                                    creatable
+                                    data={categories}
+                                    onCreate={(query) => {
+                                        setCategories((category) => [...category, query]);
+                                        return query;
+                                    }}
+                                /></th>
                             <th>
                                 <Grid>
                                     <Grid.Col sm={10} span={8}>

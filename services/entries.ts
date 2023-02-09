@@ -11,19 +11,12 @@ const getEntries = async (userId?: string, dateFrom?: Date | null, dateTo?: Date
         .then(res => res.json());
 };
 
-const saveEntry = (userId: string, date: Date, entry: string, hours: number) => {
+const saveEntry = (userId: string, date: Date, entry: string, hours: number, category: string) => {
     return fetch(`${process.env.NEXT_PUBLIC_API_URL}/timeEntries/`,
         {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user: userId,
-                entry: entry,
-                date: date,
-                hours: hours
-            })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: userId, entry, date, hours, category })
         });
 };
 

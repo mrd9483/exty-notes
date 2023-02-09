@@ -1,4 +1,4 @@
-import M from '@/data/models/Note';
+import M, from '@/data/models/Note';
 
 import mongoose from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -18,16 +18,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             throw new ApiError('Id is not fomatted correctly', 400);
         }
 
-        const obj = await M.updateOne({ _id: id }, {
-            updated: Date.now,
-            note: req.body.note,
-            slug: req.body.slug,
-            user: req.body.user,
-            title: req.body.title,
-            active: true
-        });
-
-        res.status(200).json(obj);
+        const n = await M.findOne({ _id: id });
+        if (n !== null) {
+            n.updated = new Date();
+            n.note = req.body.note ?? n.note;
+            n.slug = req.body.slug ?? n.slug;
+            n.title = req.body.title ?? n.title;
+            
+            res.status(200).json(await n.save());
+        } else {
+            res.status(404);
+        }
     };
 
     const DELETE = async () => {

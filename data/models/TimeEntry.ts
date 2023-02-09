@@ -5,6 +5,7 @@ interface ITimeEntry {
     user: string,
     updated: Date,
     entry: string,
+    category: string,
     date: Date,
     hours: number
 }
@@ -14,6 +15,7 @@ const timeEntrySchema = new Schema({
     updated: { type: Date, default: Date.now },
     entry: String,
     date: Date,
+    category: String,
     hours: { type: Number, min: 0, max: 24 }
 });
 

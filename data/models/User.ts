@@ -5,6 +5,7 @@ const userSchema = new Schema({
     lastName: String,
     email: String,
     active: Boolean,
+    categories: [String],
     updated: { type: Date, default: Date.now }
 });
 
