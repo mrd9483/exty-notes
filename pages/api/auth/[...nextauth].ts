@@ -30,9 +30,6 @@ const authOptions: NextAuthOptions = {
 
     callbacks: {
         session: async ({ session, token }) => {
-            console.log(session);
-            console.log(token);
-
             if (session?.user) {
                 session.user.id = token.sub;
             }

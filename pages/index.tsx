@@ -1,6 +1,7 @@
 import Layout from '@/components/Layout';
 import { Button, Container, Input } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import CommandLine from '@/components/CommandLine';
 
 const Home: React.FC = () => {
 
@@ -27,8 +28,7 @@ const Home: React.FC = () => {
     return (
         <Layout menu={<></>}>
             <Container size="lg" px="xs">
-                <Input {...form.getInputProps('title')} placeholder="Title" radius="md" mb="md" />
-                <Button variant="gradient" onClick={addNote} gradient={{ from: 'indigo', to: 'red' }}>Create Note</Button>
+                <CommandLine onEnter={() => alert('test')} />
             </Container>
         </Layout>
     );

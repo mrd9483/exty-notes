@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import ApiError from './errors/ApiError';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, Error } from 'mongoose';
 import ResourceNotFoundError from './errors/ResourceNotFoundError';
 
 export default async function apiGlobal(req: NextApiRequest, res: NextApiResponse, actions: { [key: string]: () => Promise<void> }) {
@@ -22,7 +22,7 @@ export default async function apiGlobal(req: NextApiRequest, res: NextApiRespons
     }
 }
 
-function GetByIdGlobal<T> (model: Model<T>, res: NextApiResponse, id: string) {
+function GetByIdGlobal<T>(model: Model<T>, res: NextApiResponse, id: string) {
     return async () => {
         if (!mongoose.isObjectIdOrHexString(id)) {
             throw new ApiError('Id is not fomatted correctly', 400);
@@ -38,4 +38,12 @@ function GetByIdGlobal<T> (model: Model<T>, res: NextApiResponse, id: string) {
     };
 }
 
-export { GetByIdGlobal };
+function handleValidationError(err: Error.ValidationError, res: NextApiResponse) {
+    const messages = [];
+    for (const field in err.errors) {
+        messages.push(err.errors[field].message);
+    }
+    res.status(422).json({ messages });
+}
+
+export { GetByIdGlobal, handleValidationError };

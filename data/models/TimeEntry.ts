@@ -11,12 +11,12 @@ interface ITimeEntry {
 }
 
 const timeEntrySchema = new Schema({
-    user: { type: Schema.Types.ObjectId, ref: 'User', require: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     updated: { type: Date, default: Date.now },
-    entry: String,
+    entry: { type: String, required: true },
     date: Date,
     category: String,
-    hours: { type: Number, min: 0, max: 24 }
+    hours: { type: Number, min: 0, max: 24, required: true }
 });
 
 const TimeEntry = models.TimeEntry || model<ITimeEntry>('TimeEntry', timeEntrySchema);

@@ -3,7 +3,7 @@ import { RichTextEditor, Link } from '@mantine/tiptap';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Input, Container, Group, Grid, ActionIcon, Center, ThemeIcon } from '@mantine/core';
+import { Input, Container, Group, Grid, ActionIcon, Center, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote } from '@/data/models/Note';
 import { INavigation } from '@/data/models/Navigation';
@@ -41,10 +41,11 @@ type Props = {
 
 const Page: React.FC<Props> = (props) => {
     const loaded = useRef(false);
+    const contentJson = (props.note.note !== '' && validateJson(props.note.note)) ? props.note.note : '[]';
 
     const content = {
         type: 'doc',
-        content: JSON.parse(props.note.note)
+        content: JSON.parse(contentJson)
     };
 
     const editor = useEditor({
@@ -71,12 +72,10 @@ const Page: React.FC<Props> = (props) => {
         if (!debouncedEditor)
             return;
 
-        setSaveIndicator(true);
         if (loaded.current) {
+            setSaveIndicator(true);
             saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
                 .then(() => setSaveIndicator(false));
-
-
         } else {
             loaded.current = true;
         }

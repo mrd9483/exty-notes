@@ -1,5 +1,5 @@
 import NoteLayout from '@/components/NoteLayout';
-import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box, Button, Center } from '@mantine/core';
+import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box, Button, Center, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INavigation } from '@/data/models/Navigation';
 import { IconTrash } from '@tabler/icons';
@@ -8,10 +8,14 @@ import { INote } from '@/data/models/Note';
 import { useRouter } from 'next/router';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
+import { generateHTML } from '@tiptap/html';
+import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
+import Underline from '@tiptap/extension-underline';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
-    
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${session?.user.id}`);
     const data = await res.json();
 
@@ -53,6 +57,12 @@ const Home: React.FC<Props> = (props) => {
         router.replace(router.asPath);
     };
 
+    const getJsonFromN = (n: INote) => {
+        const jsonObj = (n.note !== '' && validateJson(n.note)) ? JSON.parse(n.note): [];
+        const html = generateHTML({ type: 'doc', content: jsonObj }, [StarterKit, Link, Underline]);
+        return html;
+    };
+
     return (
         <NoteLayout navigation={props.navigation}>
             <Container size="lg" px="xs">
@@ -72,7 +82,7 @@ const Home: React.FC<Props> = (props) => {
                                 </Card.Section>
                                 <Box mt="sm" color="dimmed" h={200}>
                                     <Text size={12}>
-                                        {n.note}
+                                        <div dangerouslySetInnerHTML={{ __html: getJsonFromN(n) }}></div>
                                     </Text>
                                 </Box>
                             </Card>
