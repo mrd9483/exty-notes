@@ -10,7 +10,7 @@ type Props = {
 
 const CommandLine: React.FC<Props> = (props) => {
     const [value, setValue] = useState('');
-    const inputReference = useRef(null);
+    const inputReference = useRef<HTMLInputElement>(null);
 
     const handleKeyDown = (event: { key: string; }) => {
         if (event.key === 'Enter' && props.onEnter) {
@@ -19,7 +19,9 @@ const CommandLine: React.FC<Props> = (props) => {
     };
 
     useEffect(() => {
-        inputReference.current.focus();
+        if (inputReference.current)
+            inputReference.current.focus();
+            
     }, [props.triggerFocus]);
 
     return (<TextInput

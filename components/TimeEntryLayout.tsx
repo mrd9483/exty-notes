@@ -1,4 +1,3 @@
-import { Navbar, Box, NavLink } from '@mantine/core';
 import { ReactNode } from 'react';
 import Layout from './Layout';
 import { INavigation } from '@/data/models/Navigation';

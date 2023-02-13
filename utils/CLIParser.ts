@@ -29,8 +29,10 @@ export default class CLIParser {
 }
 
 interface CLIParserOptions {
-    arguments?: [{
-        description?: string;
-        optional: boolean;
-    }];
+    arguments?: CLIParserOptionArguments[];
+}
+
+interface CLIParserOptionArguments {
+    description?: string;
+    optional: boolean;
 }

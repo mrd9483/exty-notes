@@ -3,7 +3,7 @@ import { RichTextEditor, Link } from '@mantine/tiptap';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Input, Container, Group, Grid, ActionIcon, Center, ThemeIcon, validateJson } from '@mantine/core';
+import { Input, Container, Grid, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote } from '@/data/models/Note';
 import { INavigation } from '@/data/models/Navigation';

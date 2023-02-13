@@ -9,6 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { userId } = req.query;
 
     const GET = async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const query: any = {};
 
         if (userId !== null) {

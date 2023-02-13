@@ -1,4 +1,4 @@
-import M, from '@/data/models/Note';
+import M from '@/data/models/Note';
 
 import mongoose from 'mongoose';
 import type { NextApiRequest, NextApiResponse } from 'next';

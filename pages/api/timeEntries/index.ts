@@ -15,7 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const PUT = async () => {
         const obj = new M(req.body);
 
-        await obj.save((err, obj) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await obj.save((err: Error.ValidationError, obj: any) => {
             if (err instanceof Error.ValidationError) handleValidationError(err, res);
             else res.status(200).json(obj);
         });
