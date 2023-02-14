@@ -52,7 +52,7 @@ const Home: React.FC<Props> = (props) => {
     };
 
     const handleDelete = async () => {
-        await fetch(`http://localhost:3000/api/notes/${idToDelete}`, { method: 'DELETE' }).then(res => res.json());
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${idToDelete}`, { method: 'DELETE' }).then(res => res.json());
         handleClose();
         router.replace(router.asPath);
     };

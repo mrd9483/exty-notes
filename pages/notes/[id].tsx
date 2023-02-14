@@ -20,10 +20,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const { id } = context.query;
 
-    const resNavigation = await fetch(`http://localhost:3000/api/navigations/user/${session?.user.id}`);
+    const resNavigation = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${session?.user.id}`);
     const dataNavigation = await resNavigation.json();
 
-    const resNote = await fetch(`http://localhost:3000/api/notes/${id}`);
+    const resNote = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${id}`);
     const dataNote = await resNote.json();
 
     return {
