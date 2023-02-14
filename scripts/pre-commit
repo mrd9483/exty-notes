@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo "***** Building ******"
+
+npm run build
+
+status=$?
+
+exit $status

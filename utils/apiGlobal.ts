@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import ApiError from './errors/ApiError';
-import mongoose, { Model, Error } from 'mongoose';
+import mongoose, { Model, Error, Document, CallbackError } from 'mongoose';
 import ResourceNotFoundError from './errors/ResourceNotFoundError';
 
 export default async function apiGlobal(req: NextApiRequest, res: NextApiResponse, actions: { [key: string]: () => Promise<void> }) {
@@ -38,6 +38,16 @@ function GetByIdGlobal<T>(model: Model<T>, res: NextApiResponse, id: string) {
     };
 }
 
+function putGlobal<T>(model: Document<T>, res: NextApiResponse) {
+    return () => new Promise<void>(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        model.save((err: CallbackError, obj: any) => {
+            if (err instanceof Error.ValidationError) handleValidationError(err, res);
+            else res.status(200).json(obj);
+        });
+    });
+}
+
 function handleValidationError(err: Error.ValidationError, res: NextApiResponse) {
     const messages = [];
     for (const field in err.errors) {
@@ -46,4 +56,4 @@ function handleValidationError(err: Error.ValidationError, res: NextApiResponse)
     res.status(422).json({ messages });
 }
 
-export { GetByIdGlobal, handleValidationError };
+export { putGlobal, GetByIdGlobal, handleValidationError };
