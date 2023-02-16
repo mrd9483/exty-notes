@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { id } = req.query;
 
     const GET = async () => {
-        const obj = await M.find({ user: id }).exec();
+        const obj = await M.find({ user: id }).exec2();
         res.status(200).json(obj);
     };
 
