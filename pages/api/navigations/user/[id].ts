@@ -13,5 +13,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(obj);
     };
 
-    await apiGlobal(req, res, { GET });
+    const PATCH = async () => {
+        const obj = await M.findOne({ user: id }).exec();
+        if (obj !== null) {
+            obj.notes.push({ note: req.body.note, title: req.body.title });
+            obj.save();
+        }
+
+        res.status(200).json(obj);
+    };
+
+    await apiGlobal(req, res, { GET, PATCH });
 }
