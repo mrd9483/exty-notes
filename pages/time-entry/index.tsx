@@ -9,20 +9,20 @@ import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconTrash } from '@tabler/icons';
 import { getEntries, saveEntry, deleteEntry } from '@/services/entries';
+import { timeService } from '@/utils/listeners';
 
-type Props = {
-    initialData: Array<ITimeEntry>,
-    userId: string,
-    apiUrl: string
-}
-
-const TimeEntryIndex: React.FC<Props> = () => {
+const TimeEntryIndex: React.FC = () => {
     const [datePicker, setDatePicker] = useState<DateRangePickerValue>();
     const [data, setData] = useState<ITimeEntry[]>([]);
     const [categories, setCategories] = useState(['test', 'test2']);
     const [addLoading, setAddLoading] = useState(false);
+    const [dataAdded, setDataAdded] = useState('');
 
     const { data: session, status } = useSession();
+
+    timeService.getData().subscribe((id) => {
+        setDataAdded(id as string);
+    });
 
     const form = useForm({
         validateInputOnBlur: true,
@@ -65,7 +65,7 @@ const TimeEntryIndex: React.FC<Props> = () => {
         };
 
         runEffect();
-    }, [status]);
+    }, [status, dataAdded]);
 
     const handleAdd = async () => {
         if (!form.validate().hasErrors) {

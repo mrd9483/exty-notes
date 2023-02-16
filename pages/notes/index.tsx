@@ -102,8 +102,8 @@ const Home: React.FC<Props> = (props) => {
                 <Text align='center' weight={500} mb="xl">Are you sure you would like to delete?</Text>
                 <Center>
                     <Group position='apart'>
-                        <Button onClick={() => handleDelete()} color="red">Yes</Button>
-                        <Button variant="outline" onClick={() => handleClose()} color="red">No</Button>
+                        <Button onClick={handleDelete} color="red">Yes</Button>
+                        <Button variant="outline" onClick={handleClose} color="red">No</Button>
                     </Group>
                 </Center>
             </Modal>

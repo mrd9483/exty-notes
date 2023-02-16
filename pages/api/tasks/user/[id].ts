@@ -6,10 +6,10 @@ import apiGlobal from '../../../../utils/apiGlobal';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
 
-    const { id } = req.query;
+    const { id, incompletedOnly } = req.query;
 
     const GET = async () => {
-        const obj = await M.find({ user: id }).exec2();
+        const obj = await M.find({ user: id, isComplete: { $ne: incompletedOnly === 'true' } }).exec();
         res.status(200).json(obj);
     };
 

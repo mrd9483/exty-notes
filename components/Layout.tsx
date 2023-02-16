@@ -11,6 +11,8 @@ import { useRouter } from 'next/router';
 import { saveEntry } from '@/services/entries';
 import * as chrono from 'chrono-node';
 import { toast } from 'react-toastify';
+import { saveTask } from '@/services/tasks';
+import { taskService, timeService } from '@/utils/listeners';
 
 type Props = {
   children: ReactNode;
@@ -38,13 +40,27 @@ const Layout: React.FC<Props> = (props) => {
     router.push(path).then(() => router.reload());
   };
 
+  const addTaskOnEnter = async (task: string) => {
+    try {
+      const obj = await saveTask(session?.user.id as string, task);
+      toast.success('Task Saved');
+      taskService.setData(obj._id);
+    } catch {
+      toast.error('Task save failed');
+    }
+
+    setCommandDisabled(false);
+  };
+
   const addTimeOnEnter = async (hours: string, task: string, when: string) => {
     const whenDate = chrono.parseDate(when) ?? new Date();
     const hoursNumber = parseFloat(hours);
 
     const response = await saveEntry(session?.user.id as string, whenDate, task, hoursNumber, '');
     if (response.status === 200) {
+      const obj = await response.json();
       toast.success('Time Saved');
+      timeService.setData(obj._id);
     } else {
       throw new Error('Time entry incorrect');
     }
@@ -63,11 +79,13 @@ const Layout: React.FC<Props> = (props) => {
             { optional: true, description: 'when' },
           ]
         },
+        'task': { arguments: [{ optional: false, description: 'entry' }] },
         'fart': {}
       },
         {
           'note': (...args: string[]) => { addNoteOnEnter(args.join(' ')); },
           'time': (...args: string[]) => { addTimeOnEnter(args[0], args[1], args[2]); },
+          'task': (...args: string[]) => { addTaskOnEnter(args.join(' ')); },
           'fart': () => { toast.info('💩💩💩'); setCommandDisabled(false); }
         });
       try {
@@ -108,7 +126,7 @@ const Layout: React.FC<Props> = (props) => {
                   <Menu.Dropdown>
                     <Menu.Item component='a' href='/notes' icon={<IconNotes size={16} />}>Notes</Menu.Item>
                     <Menu.Item component='a' href='/time-entry' icon={<IconClockHour8 size={16} />}>Time Entry</Menu.Item>
-                    <Menu.Item component='a' href='/notes' icon={<IconCheckbox size={16} />}>Tasks</Menu.Item>
+                    <Menu.Item component='a' href='/tasks' icon={<IconCheckbox size={16} />}>Tasks</Menu.Item>
                     <Menu.Divider />
                     <Menu.Item onClick={() => signOut({ callbackUrl: '/' })} icon={<IconLogout size={16} />}>Log out</Menu.Item>
                   </Menu.Dropdown> :

@@ -38,13 +38,11 @@ function GetByIdGlobal<T>(model: Model<T>, res: NextApiResponse, id: string) {
     };
 }
 
-function putGlobal<T>(model: Document<T>, res: NextApiResponse) {
-    return () => new Promise<void>(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        model.save((err: CallbackError, obj: any) => {
-            if (err instanceof Error.ValidationError) handleValidationError(err, res);
-            else res.status(200).json(obj);
-        });
+function saveApiGlobal<T>(model: Document<T>, res: NextApiResponse) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    model.save((err: CallbackError, obj: any) => {
+        if (err instanceof Error.ValidationError) handleValidationError(err, res);
+        else res.status(200).json(obj);
     });
 }
 
@@ -56,4 +54,4 @@ function handleValidationError(err: Error.ValidationError, res: NextApiResponse)
     res.status(422).json({ messages });
 }
 
-export { putGlobal, GetByIdGlobal, handleValidationError };
+export { saveApiGlobal, GetByIdGlobal, handleValidationError };

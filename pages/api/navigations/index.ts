@@ -1,7 +1,7 @@
 import M from '@/data/models/Navigation';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import DbConnection from '@/data/DbConnection';
-import apiGlobal, { putGlobal } from '../../../utils/apiGlobal';
+import apiGlobal, { saveApiGlobal } from '../../../utils/apiGlobal';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(obj);
     };
 
-    const PUT = putGlobal<typeof M>(new M(req.body), res);
+    const PUT = async () => { saveApiGlobal<typeof M>(new M(req.body), res); };
 
     await apiGlobal(req, res, { GET, PUT });
 }
