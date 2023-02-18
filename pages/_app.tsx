@@ -9,7 +9,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <SessionProvider session={pageProps.session}>
-      <MantineProvider withGlobalStyles withNormalizeCSS theme={{ colorScheme: 'dark' }}>
+      <MantineProvider withGlobalStyles withNormalizeCSS>
         <Component {...pageProps} />
         <ToastContainer position="top-center" theme="colored" />
       </MantineProvider>

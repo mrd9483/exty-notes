@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { AppShell, Header, Title, Group, ActionIcon, Menu } from '@mantine/core';
+import { AppShell, Header, Title, Group, ActionIcon, Menu, Drawer, useMantineTheme } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconMenu2, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -13,6 +13,7 @@ import * as chrono from 'chrono-node';
 import { toast } from 'react-toastify';
 import { saveTask } from '@/services/tasks';
 import { taskService, timeService } from '@/utils/listeners';
+import TaskList from './TaskList';
 
 type Props = {
   children: ReactNode;
@@ -22,10 +23,12 @@ type Props = {
 const Layout: React.FC<Props> = (props) => {
   const { data: session } = useSession();
   const router = useRouter();
+  const theme = useMantineTheme();
 
   const [commandOpened, setCommandOpened] = useState(false);
   const [triggerFocus, setTriggerFocus] = useState(false);
   const [commandDisabled, setCommandDisabled] = useState(false);
+  const [taskOpened, setTaskOpened] = useState(false);
 
   useWindowEvent('keydown', (event) => {
     if (event.code === 'Slash' && (event.ctrlKey || event.metaKey)) {
@@ -104,22 +107,40 @@ const Layout: React.FC<Props> = (props) => {
     }
   };
 
+  const handleTask = () => {
+    setTaskOpened(true);
+  };
+
+  const handleTime = () => {
+    setCommandOpened((o) => !o);
+    if (commandOpened) {
+      setTriggerFocus((t) => !t);
+    }
+  };
+
   return (
     <AppShell
       padding="md"
       navbar={<>{props.menu}</>}
       header={
-        <Header height={65} p="xs" sx={() => ({ background: 'linear-gradient(90deg, rgba(58,60,180,1) 42%, rgba(253,29,29,1) 80%, rgba(252,176,69,1) 100%);' })}>
+        <Header height={65} p="xs" sx={() => ({ background: 'linear-gradient(90deg, rgba(58,110,250,1) 0%, rgba(58,60,180,1) 100%);' })}>
           <Group position="apart" align="center">
             <Title sx={{ color: '#ffffff' }}>MyNote</Title>
             <Group>
-              <ActionIcon variant='filled' size='lg' onClick={handleClick}>
-                <IconSlash size={20} />
+
+              <ActionIcon variant='gradient' size='lg' onClick={handleTime}>
+                <IconClockHour8 size={20} stroke={3} />
+              </ActionIcon>
+              <ActionIcon variant='gradient' size='lg' onClick={handleTask}>
+                <IconCheckbox size={20} stroke={3} />
+              </ActionIcon>
+              <ActionIcon variant='gradient' size='lg' onClick={handleClick}>
+                <IconSlash size={20} stroke={3} />
               </ActionIcon>
               <Menu shadow="xl" width={200} radius="sm">
                 <Menu.Target>
-                  <ActionIcon variant="filled" size="lg">
-                    <IconMenu2 size={20} />
+                  <ActionIcon variant='gradient' size="lg">
+                    <IconMenu2 size={20} stroke={3} />
                   </ActionIcon>
                 </Menu.Target>
                 {session ?
@@ -147,6 +168,22 @@ const Layout: React.FC<Props> = (props) => {
         {props.children}
         <CommandLineDialog opened={commandOpened} disabled={commandDisabled} triggerFocus={triggerFocus} onEnter={handleEnter} />
       </>
+      <Drawer
+        opened={taskOpened}
+        onClose={() => setTaskOpened(false)}
+        size={400}
+        overlayColor={theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2]}
+        overlayOpacity={0.55}
+        overlayBlur={3}
+        transition="rotate-left"
+        transitionDuration={250}
+        transitionTimingFunction="ease"
+        position="right"
+      >
+        {
+          <TaskList showCompleted={false} showButtons={false} />
+        }
+      </Drawer>
     </AppShell>
   );
 };
