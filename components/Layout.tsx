@@ -56,7 +56,7 @@ const Layout: React.FC<Props> = (props) => {
     const whenDate = chrono.parseDate(when) ?? new Date();
     const hoursNumber = parseFloat(hours);
 
-    const response = await saveEntry(session?.user.id as string, whenDate, task, hoursNumber, '');
+    const response = await saveEntry(session?.user.id as string, whenDate, task.replace('"', ''), hoursNumber, '');
     if (response.status === 200) {
       const obj = await response.json();
       toast.success('Time Saved');
