@@ -117,7 +117,7 @@ const TaskList: React.FC<Props> = (props) => {
 
                 <th>
                     {componentProps.showButtons && (
-                        <Button loading={addLoading} onClick={handleAll} sx={{ width: '100%' }} variant="gradient" gradient={{ from: 'indigo', to: 'red' }}>Show All</Button>
+                        <Button loading={addLoading} onClick={handleAll} sx={{ width: '100%' }} variant="gradient">Show All</Button>
                     )}
                 </th>
                 {componentProps.showCompleted && (
@@ -131,7 +131,7 @@ const TaskList: React.FC<Props> = (props) => {
                         {componentProps.showButtons && (
                             <Grid.Col ta='right' sm={2} span={4}>
 
-                                <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient" gradient={{ from: 'indigo', to: 'red' }}>Add</Button>
+                                <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient">Add</Button>
                             </Grid.Col>
                         )}
                     </Grid>

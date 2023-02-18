@@ -13,7 +13,16 @@ import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import { saveContent } from '../../services/notes';
-import { IconDeviceFloppy } from '@tabler/icons';
+import { IconColumnInsertLeft, IconColumnInsertRight, IconColumnsOff, IconDeviceFloppy, IconLayoutCards, IconLayoutRows, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
+
+import TaskList from '@tiptap/extension-task-list';
+import TaskItem from '@tiptap/extension-task-item';
+import Table from '@tiptap/extension-table';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TableRow from '@tiptap/extension-table-row';
+import { RiDeleteColumn, RiDeleteRow } from 'react-icons/ri';
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
@@ -52,7 +61,13 @@ const Page: React.FC<Props> = (props) => {
         extensions: [
             StarterKit,
             Link,
-            Underline
+            Underline,
+            Table.configure({ resizable: true }),
+            TableCell,
+            TableHeader,
+            TableRow,
+            TaskList,
+            TaskItem
         ],
         content
     });
@@ -135,8 +150,37 @@ const Page: React.FC<Props> = (props) => {
                             <RichTextEditor.AlignJustify />
                             <RichTextEditor.AlignRight />
                         </RichTextEditor.ControlsGroup>
+                        <RichTextEditor.ControlsGroup>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}>
+                                <IconTable color='#999' />
+                            </RichTextEditor.Control>
+                        </RichTextEditor.ControlsGroup>
+                        <RichTextEditor.ControlsGroup>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addColumnBefore().run()}>
+                                <IconColumnInsertLeft color='#999' />
+                            </RichTextEditor.Control>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addColumnAfter().run()}>
+                                <IconColumnInsertRight color='#999' />
+                            </RichTextEditor.Control>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addRowBefore().run()}>
+                                <IconRowInsertTop color='#999' />
+                            </RichTextEditor.Control>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addRowAfter().run()}>
+                                <IconRowInsertBottom color='#999' />
+                            </RichTextEditor.Control>
+                        </RichTextEditor.ControlsGroup>
+                        <RichTextEditor.ControlsGroup>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteTable().run()}>
+                                <IconTableOff color='#999' />
+                            </RichTextEditor.Control>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteColumn().run()}>
+                                <RiDeleteColumn color='#999' size={24}  />
+                            </RichTextEditor.Control>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteRow().run()}>
+                                <RiDeleteRow color='#999' size={24} />
+                            </RichTextEditor.Control>
+                        </RichTextEditor.ControlsGroup>
                     </RichTextEditor.Toolbar>
-
                     <RichTextEditor.Content />
                 </RichTextEditor>
             </Container>

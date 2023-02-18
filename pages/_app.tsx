@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.min.css';
+import '../styles/noteStyle.scss';
 
 export default function App({ Component, pageProps }: AppProps) {
 
