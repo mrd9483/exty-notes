@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { saveTask } from '@/services/tasks';
 import { taskService, timeService } from '@/utils/listeners';
 import TaskList from './TaskList';
+import Link from 'next/link';
 
 type Props = {
   children: ReactNode;
@@ -125,9 +126,10 @@ const Layout: React.FC<Props> = (props) => {
       header={
         <Header height={65} p="xs" sx={() => ({ background: 'linear-gradient(90deg, rgba(58,110,250,1) 0%, rgba(58,60,180,1) 100%);' })}>
           <Group position="apart" align="center">
-            <Title sx={{ color: '#ffffff' }}>MyNote</Title>
+            <Link href='/' className="title">
+              <Title sx={{ color: '#ffffff' }}>MyNote</Title>
+            </Link>
             <Group>
-
               <ActionIcon variant='gradient' size='lg' onClick={handleTime}>
                 <IconClockHour8 size={20} stroke={3} />
               </ActionIcon>

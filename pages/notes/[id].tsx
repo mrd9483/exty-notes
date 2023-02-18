@@ -12,8 +12,8 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
-import { saveContent } from '../../services/notes';
-import { IconColumnInsertLeft, IconColumnInsertRight, IconColumnsOff, IconDeviceFloppy, IconLayoutCards, IconLayoutRows, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
+import { getContent, saveContent } from '../../services/notes';
+import { IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
 
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
@@ -32,8 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const resNavigation = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${session?.user.id}`);
     const dataNavigation = await resNavigation.json();
 
-    const resNote = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${id}`);
-    const dataNote = await resNote.json();
+    const dataNote = await getContent(id as string);
 
     return {
         props: {
@@ -120,7 +119,6 @@ const Page: React.FC<Props> = (props) => {
                             <RichTextEditor.Underline />
                             <RichTextEditor.Strikethrough />
                             <RichTextEditor.ClearFormatting />
-                            <RichTextEditor.Highlight />
                             <RichTextEditor.Code />
                         </RichTextEditor.ControlsGroup>
                         <RichTextEditor.ControlsGroup>
@@ -129,55 +127,44 @@ const Page: React.FC<Props> = (props) => {
                             <RichTextEditor.H3 />
                             <RichTextEditor.H4 />
                         </RichTextEditor.ControlsGroup>
-
                         <RichTextEditor.ControlsGroup>
                             <RichTextEditor.Blockquote />
                             <RichTextEditor.Hr />
                             <RichTextEditor.BulletList />
                             <RichTextEditor.OrderedList />
-                            <RichTextEditor.Subscript />
-                            <RichTextEditor.Superscript />
                         </RichTextEditor.ControlsGroup>
-
                         <RichTextEditor.ControlsGroup>
                             <RichTextEditor.Link />
                             <RichTextEditor.Unlink />
                         </RichTextEditor.ControlsGroup>
-
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.AlignLeft />
-                            <RichTextEditor.AlignCenter />
-                            <RichTextEditor.AlignJustify />
-                            <RichTextEditor.AlignRight />
-                        </RichTextEditor.ControlsGroup>
                         <RichTextEditor.ControlsGroup>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}>
-                                <IconTable color='#999' />
+                                <IconTable stroke={1} color='#333' />
                             </RichTextEditor.Control>
                         </RichTextEditor.ControlsGroup>
                         <RichTextEditor.ControlsGroup>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().addColumnBefore().run()}>
-                                <IconColumnInsertLeft color='#999' />
+                                <IconColumnInsertLeft stroke={1} color='#000' />
                             </RichTextEditor.Control>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().addColumnAfter().run()}>
-                                <IconColumnInsertRight color='#999' />
+                                <IconColumnInsertRight stroke={1} color='#000' />
                             </RichTextEditor.Control>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().addRowBefore().run()}>
-                                <IconRowInsertTop color='#999' />
+                                <IconRowInsertTop stroke={1} color='#000' />
                             </RichTextEditor.Control>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().addRowAfter().run()}>
-                                <IconRowInsertBottom color='#999' />
+                                <IconRowInsertBottom stroke={1} color='#000' />
                             </RichTextEditor.Control>
                         </RichTextEditor.ControlsGroup>
                         <RichTextEditor.ControlsGroup>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteTable().run()}>
-                                <IconTableOff color='#999' />
+                                <IconTableOff stroke={1} color='#000' />
                             </RichTextEditor.Control>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteColumn().run()}>
-                                <RiDeleteColumn color='#999' size={24}  />
+                                <RiDeleteColumn color='#666' size={24} />
                             </RichTextEditor.Control>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteRow().run()}>
-                                <RiDeleteRow color='#999' size={24} />
+                                <RiDeleteRow color='#666' size={24} />
                             </RichTextEditor.Control>
                         </RichTextEditor.ControlsGroup>
                     </RichTextEditor.Toolbar>

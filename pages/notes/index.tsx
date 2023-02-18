@@ -2,7 +2,7 @@ import NoteLayout from '@/components/NoteLayout';
 import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box, Button, Center, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INavigation } from '@/data/models/Navigation';
-import { IconTrash } from '@tabler/icons';
+import { IconCopy, IconTrash } from '@tabler/icons';
 import { MouseEvent, useState } from 'react';
 import { INote } from '@/data/models/Note';
 import { useRouter } from 'next/router';
@@ -19,6 +19,10 @@ import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
+import { copyNote } from '@/services/notes';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const humanize = require('humanize');
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
@@ -64,6 +68,11 @@ const Home: React.FC<Props> = (props) => {
         router.replace(router.asPath);
     };
 
+    const handleCopy = async (id: string) => {
+        const note = await copyNote(id);
+        handleNavigation(note._id);
+    };
+
     const getJsonFromN = (n: INote) => {
         const jsonObj = (n.note !== '' && validateJson(n.note)) ? JSON.parse(n.note) : [];
         const settings = [StarterKit, Link, Underline, TaskList, TaskItem, Table, TableCell, TableHeader, TableRow];
@@ -82,10 +91,15 @@ const Home: React.FC<Props> = (props) => {
                             <Card withBorder shadow="sm" radius="md">
                                 <Card.Section withBorder inheritPadding py="xs">
                                     <Group position="apart">
-                                        <Text weight={500}>{n.title}</Text>
-                                        <ActionIcon onClick={(e) => handleDeleteModal(e, n._id)}>
-                                            <IconTrash size={18} />
-                                        </ActionIcon>
+                                        <Text weight={500}>{humanize.truncatechars(n.title, 30)}</Text>
+                                        <Group spacing="xs">
+                                            <ActionIcon onClick={() => handleCopy(n._id)}>
+                                                <IconCopy size={18} />
+                                            </ActionIcon>
+                                            <ActionIcon onClick={(e) => handleDeleteModal(e, n._id)}>
+                                                <IconTrash size={18} />
+                                            </ActionIcon>
+                                        </Group>
                                     </Group>
                                 </Card.Section>
                                 <Box mt="sm" color="dimmed" h={200}>
@@ -110,7 +124,7 @@ const Home: React.FC<Props> = (props) => {
                 <Text align='center' weight={500} mb="xl">Are you sure you would like to delete?</Text>
                 <Center>
                     <Group position='apart'>
-                        <Button onClick={handleDelete} color="red">Yes</Button>
+                        <Button onClick={handleDelete} variant="gradient" color="red">Yes</Button>
                         <Button variant="outline" onClick={handleClose} color="red">No</Button>
                     </Group>
                 </Center>

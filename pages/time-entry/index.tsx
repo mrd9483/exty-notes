@@ -150,7 +150,7 @@ const TimeEntryIndex: React.FC = () => {
                                         <TextInput {...form.getInputProps('entry')} placeholder="Entry" />
                                     </Grid.Col>
                                     <Grid.Col ta='right' sm={2} span={4}>
-                                        <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient" gradient={{ from: 'indigo', to: 'red' }}>Add</Button>
+                                        <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient">Add</Button>
                                     </Grid.Col>
                                 </Grid>
                             </th>
