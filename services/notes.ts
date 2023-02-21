@@ -7,7 +7,7 @@ const saveContent = (noteId: string, content: string, title: string) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ note: content, title })
         })
-            .then(res => res.json());
+        .then(res => res.json());
 };
 
 const addNote = async (userId: string, title: string, content?: string) => {
@@ -16,13 +16,6 @@ const addNote = async (userId: string, title: string, content?: string) => {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ user: userId, title, note: content ?? '' })
-        }).then(res => res.json());
-
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${userId}`,
-        {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ note: note._id, title })
         }).then(res => res.json());
 
     return note;
@@ -38,8 +31,9 @@ const copyNote = async (id: string) => {
     return await addNote(note.user, 'COPY ' + note.title, note.note);
 };
 
-const getNotesByUserId = async (userId: string) => {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/user/${userId}`)
+const getNotesByUserId = async (userId: string, titlesOnly?: boolean) => {
+    const titlesOnlyStr = titlesOnly ? '?titlesOnly=true' : '';
+    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/user/${userId}${titlesOnlyStr}`)
         .then(res => res.json());
 };
 

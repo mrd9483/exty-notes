@@ -1,11 +1,12 @@
 import { Navbar, Box, NavLink } from '@mantine/core';
 import { ReactNode } from 'react';
 import Layout from './Layout';
-import { INavigation } from '@/data/models/Navigation';
+import { INoteTitleOnly } from '@/data/models/Note';
+import _ from 'lodash';
 
 type NoteProps = {
     children: ReactNode;
-    navigation: INavigation;
+    notes: INoteTitleOnly[];
 };
 
 const NoteLayout: React.FC<NoteProps> = (props) => {
@@ -13,8 +14,8 @@ const NoteLayout: React.FC<NoteProps> = (props) => {
         <Layout menu={
             <Navbar fixed={true} width={{ base: 300 }}>
                 <Box>
-                    {props.navigation.notes.map((n) => (
-                        <NavLink key={n.note.toString()} label={n.title} component='a' href={`/notes/${n.note}`} />
+                    {props.notes.map((n) => (
+                        <NavLink key={n._id} label={_.truncate(n.title, { length: 30 })} component='a' href={`/notes/${n._id}`} />
                     ))}
                 </Box>
             </Navbar>}

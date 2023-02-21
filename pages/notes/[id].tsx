@@ -5,14 +5,13 @@ import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Input, Text, Container, Grid, ThemeIcon, validateJson, Group } from '@mantine/core';
 import { GetServerSideProps } from 'next';
-import { INote } from '@/data/models/Note';
-import { INavigation } from '@/data/models/Navigation';
+import { INote, INoteTitleOnly } from '@/data/models/Note';
 import { useForm } from '@mantine/form';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
-import { getNote, saveContent } from '../../services/notes';
+import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
 import { IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
 
 import TaskList from '@tiptap/extension-task-list';
@@ -22,7 +21,6 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import { RiDeleteColumn, RiDeleteRow } from 'react-icons/ri';
-import { getNavigationsByUser } from '@/services/navigations';
 import mongoose from 'mongoose';
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
@@ -35,14 +33,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     return {
         props: {
-            navigation: await getNavigationsByUser(session?.user.id as string),
+            notesTitleOnly: await getNotesByUserId(session?.user.id as string, true),
             note: await getNote(id as string)
         }
     };
 };
 
 type Props = {
-    navigation: INavigation;
+    notesTitleOnly: INoteTitleOnly[];
     note: INote;
 }
 
@@ -109,7 +107,7 @@ const Page: React.FC<Props> = (props) => {
     }, [modified]);
 
     return (
-        <NoteLayout navigation={props.navigation}>
+        <NoteLayout notes={props.notesTitleOnly}>
             <Container size="lg" px="xs">
                 <Grid>
                     <Grid.Col span={11}>

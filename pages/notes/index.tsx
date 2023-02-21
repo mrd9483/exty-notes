@@ -1,7 +1,6 @@
 import NoteLayout from '@/components/NoteLayout';
 import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box, Button, Center, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
-import { INavigation } from '@/data/models/Navigation';
 import { IconCopy, IconTrash } from '@tabler/icons';
 import { MouseEvent, useState } from 'react';
 import { INote } from '@/data/models/Note';
@@ -20,7 +19,6 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import { copyNote, getNotesByUserId } from '@/services/notes';
-import { getNavigationsByUser } from '@/services/navigations';
 
 import _ from 'lodash';
 
@@ -30,14 +28,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
         props:
         {
-            notes: await getNotesByUserId(session?.user.id as string),
-            navigation: await getNavigationsByUser(session?.user.id as string),
+            notes: await getNotesByUserId(session?.user.id as string)
         }
     };
 };
 
 type Props = {
-    navigation: INavigation,
     notes: Array<INote>
 }
 
@@ -81,7 +77,7 @@ const Home: React.FC<Props> = (props) => {
     };
 
     return (
-        <NoteLayout navigation={props.navigation}>
+        <NoteLayout notes={props.notes}>
             <Container size="lg" px="xs">
                 <Grid>
                     {props.notes.map(n => (

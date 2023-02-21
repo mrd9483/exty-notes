@@ -10,6 +10,11 @@ interface INote {
     active: boolean
 }
 
+interface INoteTitleOnly {
+    _id: string,
+    title: string
+}
+
 const noteSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', require: true },
     updated: { type: Date, default: Date.now },
@@ -22,4 +27,4 @@ const noteSchema = new Schema({
 const Note = models.Note || model<INote>('Note', noteSchema);
 
 export default Note;
-export type { INote };
+export type { INote, INoteTitleOnly };

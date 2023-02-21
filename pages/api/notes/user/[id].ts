@@ -6,10 +6,12 @@ import apiGlobal from '../../../../utils/apiGlobal';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await DbConnection();
 
-    const { id } = req.query;
+    const { id, titlesOnly } = req.query;
 
     const GET = async () => {
-        const obj = await M.find({ user: id, active: true }).exec();
+
+        const proj = titlesOnly ? { title: true } : {};
+        const obj = await M.find({ user: id, active: true }, proj).exec();
         res.status(200).json(obj);
     };
 
