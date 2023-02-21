@@ -3,7 +3,7 @@ import { RichTextEditor, Link } from '@mantine/tiptap';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Input, Container, Grid, ThemeIcon, validateJson } from '@mantine/core';
+import { Input, Text, Container, Grid, ThemeIcon, validateJson, Group } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote } from '@/data/models/Note';
 import { INavigation } from '@/data/models/Navigation';
@@ -12,7 +12,7 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
-import { getContent, saveContent } from '../../services/notes';
+import { getNote, saveContent } from '../../services/notes';
 import { IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
 
 import TaskList from '@tiptap/extension-task-list';
@@ -22,6 +22,10 @@ import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import { RiDeleteColumn, RiDeleteRow } from 'react-icons/ri';
+import { getNavigationsByUser } from '@/services/navigations';
+import mongoose from 'mongoose';
+
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -29,15 +33,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const { id } = context.query;
 
-    const resNavigation = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${session?.user.id}`);
-    const dataNavigation = await resNavigation.json();
-
-    const dataNote = await getContent(id as string);
-
     return {
         props: {
-            navigation: dataNavigation,
-            note: dataNote
+            navigation: await getNavigationsByUser(session?.user.id as string),
+            note: await getNote(id as string)
         }
     };
 };
@@ -74,6 +73,8 @@ const Page: React.FC<Props> = (props) => {
     const [noteId,] = useState(props.note._id);
     const [debouncedEditor] = useDebounce(editor?.state.doc.content, 2000, { maxWait: 15000 });
     const [saveIndicator, setSaveIndicator] = useState(false);
+    const [modified, setModified] = useState(new Date());
+    const [modifiedHuman, setModifiedHuman] = useState('');
 
     const form = useForm({
         initialValues: {
@@ -89,12 +90,23 @@ const Page: React.FC<Props> = (props) => {
         if (loaded.current) {
             setSaveIndicator(true);
             saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
-                .then(() => setSaveIndicator(false));
+                .then((res) => {
+                    setSaveIndicator(false);
+                    setModified(new Date(res.updated));
+                });
+
         } else {
             loaded.current = true;
         }
 
     }, [debouncedEditor, form.values.title]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setModifiedHuman(formatDistanceToNow(modified, { includeSeconds: true }));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [modified]);
 
     return (
         <NoteLayout navigation={props.navigation}>
@@ -111,6 +123,11 @@ const Page: React.FC<Props> = (props) => {
                         </Container>
                     </Grid.Col>
                 </Grid>
+                <Group position='apart'>
+                    <Text c="dimmed">Created {formatDistanceToNow(new mongoose.Types.ObjectId(props.note._id).getTimestamp())} ago</Text>
+                    <Text c="dimmed">Modified {modifiedHuman} ago</Text>
+                </Group>
+
                 <RichTextEditor editor={editor}>
                     <RichTextEditor.Toolbar sticky stickyOffset={60}>
                         <RichTextEditor.ControlsGroup>

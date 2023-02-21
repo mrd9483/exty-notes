@@ -1,10 +1,10 @@
-import moment from 'moment';
+import format from 'date-fns/format';
 
 const getEntries = async (userId?: string, dateFrom?: Date | null, dateTo?: Date | null) => {
     let dateQuery = '';
 
     if (dateFrom && dateTo) {
-        dateQuery = `?dateFrom=${moment(dateFrom).format('YYYY-MM-DD')}&dateTo=${moment(dateTo).format('YYYY-MM-DD')}`;
+        dateQuery = `?dateFrom=${format(dateFrom, 'YYYY-MM-DD')}&dateTo=${format(dateTo, 'YYYY-MM-DD')}`;
     }
 
     return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/timeEntries/user/${userId}${dateQuery}`)

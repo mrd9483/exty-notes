@@ -3,8 +3,7 @@ import { ITimeEntry } from '@/data/models/TimeEntry';
 import { ActionIcon, Button, Container, Grid, Group, NumberInput, Select, Table, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
-import moment from 'moment';
+import { startOfWeek, endOfWeek, format } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconTrash } from '@tabler/icons';
@@ -42,11 +41,11 @@ const TimeEntryIndex: React.FC = () => {
 
     const handleLastWeekButton = async () => {
         setDatePicker([
-            moment().startOf('week').toDate(),
-            moment().endOf('week').toDate()
+            startOfWeek(new Date()),
+            endOfWeek(new Date())
         ]);
 
-        setData(await getEntries(session?.user.id, moment().startOf('week').toDate(), moment().endOf('week').toDate()));
+        setData(await getEntries(session?.user.id, startOfWeek(new Date()), endOfWeek(new Date())));
     };
 
     const handleDatePicker = async (dates: (Date | null)[]) => {

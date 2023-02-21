@@ -1,15 +1,13 @@
 import { INote } from '@/data/models/Note';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const humanize = require('humanize');
-
 const saveContent = (noteId: string, content: string, title: string) => {
     return fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}`,
         {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ note: content, title })
-        });
+        })
+            .then(res => res.json());
 };
 
 const addNote = async (userId: string, title: string, content?: string) => {
@@ -24,20 +22,25 @@ const addNote = async (userId: string, title: string, content?: string) => {
         {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ note: note._id, title: humanize.truncatechars(title, 30) })
+            body: JSON.stringify({ note: note._id, title })
         }).then(res => res.json());
 
     return note;
 };
 
-const getContent = async (noteId: string): Promise<INote> => {
+const getNote = async (noteId: string): Promise<INote> => {
     return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}`)
         .then(res => res.json());
 };
 
 const copyNote = async (id: string) => {
-    const note = await getContent(id);
+    const note = await getNote(id);
     return await addNote(note.user, 'COPY ' + note.title, note.note);
 };
 
-export { saveContent, addNote, getContent, copyNote };
+const getNotesByUserId = async (userId: string) => {
+    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/user/${userId}`)
+        .then(res => res.json());
+};
+
+export { saveContent, addNote, getNote, copyNote, getNotesByUserId };

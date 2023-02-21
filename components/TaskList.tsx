@@ -5,8 +5,8 @@ import { IconSquare, IconSquareCheck } from '@tabler/icons';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useSession } from 'next-auth/react';
 import { getTasks, saveTask, setTaskComplete } from '@/services/tasks';
-import moment from 'moment';
 import { taskService } from '@/utils/listeners';
+import format from 'date-fns/format';
 
 type Props = {
     showCompleted?: boolean
@@ -103,7 +103,7 @@ const TaskList: React.FC<Props> = (props) => {
                     </td>
                     {componentProps.showCompleted && (
                         <td style={{ textAlign: 'right' }}>
-                            {d.dateCompleted ? moment(d.dateCompleted).format('MM/DD/YYYY') : ''}
+                            {d.dateCompleted ? format(d.dateCompleted, 'MM/DD/YYYY') : ''}
                         </td>
                     )}
                     <td>

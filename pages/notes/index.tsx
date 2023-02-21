@@ -19,21 +19,21 @@ import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
-import { copyNote } from '@/services/notes';
+import { copyNote, getNotesByUserId } from '@/services/notes';
+import { getNavigationsByUser } from '@/services/navigations';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const humanize = require('humanize');
+import _ from 'lodash';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/navigations/user/${session?.user.id}`);
-    const data = await res.json();
-
-    const noteRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/user/${session?.user.id}`);
-    const noteData = await noteRes.json();
-
-    return { props: { navigation: data, notes: noteData } };
+    return {
+        props:
+        {
+            notes: await getNotesByUserId(session?.user.id as string),
+            navigation: await getNavigationsByUser(session?.user.id as string),
+        }
+    };
 };
 
 type Props = {
@@ -91,7 +91,7 @@ const Home: React.FC<Props> = (props) => {
                             <Card withBorder shadow="sm" radius="md">
                                 <Card.Section withBorder inheritPadding py="xs">
                                     <Group position="apart">
-                                        <Text weight={500}>{humanize.truncatechars(n.title, 30)}</Text>
+                                        <Text weight={500}>{_.truncate(n.title, { length: 30 })}</Text>
                                         <Group spacing="xs">
                                             <ActionIcon onClick={() => handleCopy(n._id)}>
                                                 <IconCopy size={18} />
