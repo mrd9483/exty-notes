@@ -1,12 +1,12 @@
-import { Button, Grid, Table, TextInput, Text, ActionIcon } from '@mantine/core';
+import { Button, Grid, Table, TextInput, Text } from '@mantine/core';
 import { ITask } from '@/data/models/Task';
 import { useEffect, useState } from 'react';
-import { IconSquare, IconSquareCheck } from '@tabler/icons';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useSession } from 'next-auth/react';
 import { getTasks, saveTask, setTaskComplete } from '@/services/tasks';
 import { taskService } from '@/utils/listeners';
 import format from 'date-fns/format';
+import TaskButton from './TaskButton';
 
 type Props = {
     showCompleted?: boolean
@@ -97,13 +97,11 @@ const TaskList: React.FC<Props> = (props) => {
             {data.map((d: ITask) => (
                 <tr key={d._id} >
                     <td>
-                        <ActionIcon onClick={() => handleRowClick(d._id)} variant="default">
-                            {d.isComplete ? <IconSquareCheck /> : <IconSquare />}
-                        </ActionIcon>
+                        <TaskButton handleRowClick={handleRowClick} task={d}></TaskButton>
                     </td>
                     {componentProps.showCompleted && (
                         <td style={{ textAlign: 'right' }}>
-                            {d.dateCompleted ? format(d.dateCompleted, 'MM/DD/YYYY') : ''}
+                            {d.dateCompleted ? format(new Date(d.dateCompleted), 'MM/dd/yyyy') : ''}
                         </td>
                     )}
                     <td>

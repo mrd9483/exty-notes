@@ -12,7 +12,7 @@ import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
-import { IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
+import { IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff, IconClockHour8 } from '@tabler/icons';
 
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
@@ -24,6 +24,7 @@ import { RiDeleteColumn, RiDeleteRow } from 'react-icons/ri';
 import mongoose from 'mongoose';
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import format from 'date-fns/format';
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -180,6 +181,11 @@ const Page: React.FC<Props> = (props) => {
                             </RichTextEditor.Control>
                             <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteRow().run()}>
                                 <RiDeleteRow color='#666' size={24} />
+                            </RichTextEditor.Control>
+                        </RichTextEditor.ControlsGroup>
+                        <RichTextEditor.ControlsGroup>
+                            <RichTextEditor.Control onClick={() => editor?.chain().focus().insertContent(`<p><strong>${format(new Date(), 'MM/dd/yyyy h:mm a')}</strong></p>`).unsetBold().run()}>
+                                <IconClockHour8 stroke={1} color='#000' />
                             </RichTextEditor.Control>
                         </RichTextEditor.ControlsGroup>
                     </RichTextEditor.Toolbar>
