@@ -127,7 +127,7 @@ const Layout: React.FC<Props> = (props) => {
         <Header height={65} p="xs" sx={() => ({ background: 'linear-gradient(90deg, rgba(58,110,250,1) 0%, rgba(58,60,180,1) 100%);' })}>
           <Group position="apart" align="center">
             <Link href='/' className="title">
-              <Title sx={{ color: '#ffffff' }}>MyNote</Title>
+              <Title sx={{ color: '#ffffff' }}>notes for .me</Title>
             </Link>
             <Group>
               <ActionIcon variant='gradient' size='lg' onClick={handleTime}>
