@@ -1,4 +1,4 @@
-import { Navbar, Box, NavLink } from '@mantine/core';
+import { Box, NavLink, Navbar } from '@mantine/core';
 import { ReactNode } from 'react';
 import Layout from './Layout';
 import { INoteTitleOnly } from '@/data/models/Note';

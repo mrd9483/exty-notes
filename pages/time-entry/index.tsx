@@ -3,11 +3,11 @@ import { ITimeEntry } from '@/data/models/TimeEntry';
 import { ActionIcon, Button, Container, Grid, Group, NumberInput, Select, Table, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { useEffect, useState } from 'react';
-import { startOfWeek, endOfWeek, format } from 'date-fns';
+import { endOfWeek, format, startOfWeek } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconTrash } from '@tabler/icons';
-import { getEntries, saveEntry, deleteEntry } from '@/services/entries';
+import { deleteEntry, getEntries, saveEntry } from '@/services/entries';
 import { timeService } from '@/utils/listeners';
 
 const TimeEntryIndex: React.FC = () => {

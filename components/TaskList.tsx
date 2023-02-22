@@ -1,4 +1,4 @@
-import { Button, Grid, Table, TextInput, Text } from '@mantine/core';
+import { Button, Grid, Table, Text, TextInput } from '@mantine/core';
 import { ITask } from '@/data/models/Task';
 import { useEffect, useState } from 'react';
 import { isNotEmpty, useForm } from '@mantine/form';

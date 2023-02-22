@@ -9,8 +9,7 @@
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended"
     ],
-    "overrides": [
-    ],
+    "overrides": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -30,10 +29,25 @@
             "always"
         ],
         "react/react-in-jsx-scope": "off",
-        "no-duplicate-imports":"error",
-        "eol-last":"warn",
-        "no-var":"error",
-        "eqeqeq":"error",
-        "react/prop-types": "off"
+        "no-duplicate-imports": "error",
+        "eol-last": "warn",
+        "no-var": "error",
+        "eqeqeq": "error",
+        "react/prop-types": "off",
+        "sort-imports": [
+            "error",
+            {
+                "ignoreCase": false,
+                "ignoreDeclarationSort": true, // don"t want to sort import lines, use eslint-plugin-import instead
+                "ignoreMemberSort": false,
+                "memberSyntaxSortOrder": [
+                    "none",
+                    "all",
+                    "multiple",
+                    "single"
+                ],
+                "allowSeparatedGroups": true
+            }
+        ]
     }
 }

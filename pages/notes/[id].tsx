@@ -1,9 +1,9 @@
 import NoteLayout from '@/components/NoteLayout';
-import { RichTextEditor, Link } from '@mantine/tiptap';
+import { Link, RichTextEditor } from '@mantine/tiptap';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Input, Text, Container, Grid, ThemeIcon, validateJson, Group } from '@mantine/core';
+import { Container, Grid, Group, Input, Text, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote, INoteTitleOnly } from '@/data/models/Note';
 import { useForm } from '@mantine/form';
@@ -12,7 +12,7 @@ import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
-import { IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff, IconClockHour8 } from '@tabler/icons';
+import { IconClockHour8, IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
 
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
@@ -25,6 +25,7 @@ import mongoose from 'mongoose';
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import format from 'date-fns/format';
+import { useSession } from 'next-auth/react';
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -69,18 +70,21 @@ const Page: React.FC<Props> = (props) => {
         content
     });
 
-    const [noteId,] = useState(props.note._id);
-    const [debouncedEditor] = useDebounce(editor?.state.doc.content, 2000, { maxWait: 15000 });
-    const [saveIndicator, setSaveIndicator] = useState(false);
-    const [modified, setModified] = useState(new Date());
-    const [modifiedHuman, setModifiedHuman] = useState('');
-
     const form = useForm({
         initialValues: {
             title: props.note.title,
             note: props.note.note
         }
     });
+
+    const noteId = props.note._id;
+    const [debouncedEditor] = useDebounce(editor?.state.doc.content, 2000, { maxWait: 15000 });
+    const [debouncedTitle] = useDebounce(form?.values.title, 2000, { maxWait: 15000 });
+    const [saveIndicator, setSaveIndicator] = useState(false);
+    const [modified, setModified] = useState(new Date());
+    const [modifiedHuman, setModifiedHuman] = useState('');
+    const [notesTitleOnly, setNotesTitleOnly] = useState<INoteTitleOnly[]>(props.notesTitleOnly);
+    const { data: session } = useSession();
 
     useEffect(() => {
         if (!debouncedEditor)
@@ -98,7 +102,23 @@ const Page: React.FC<Props> = (props) => {
             loaded.current = true;
         }
 
-    }, [debouncedEditor, form.values.title]);
+    }, [debouncedEditor]);
+
+    useEffect(() => {
+        if (!debouncedEditor)
+            return;
+
+        setSaveIndicator(true);
+        saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
+            .then((res) => {
+                setSaveIndicator(false);
+                setModified(new Date(res.updated));
+
+                getNotesByUserId(session?.user.id as string, true).then(data => {
+                    setNotesTitleOnly(data);
+                });
+            });
+    }, [debouncedTitle]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -108,7 +128,7 @@ const Page: React.FC<Props> = (props) => {
     }, [modified]);
 
     return (
-        <NoteLayout notes={props.notesTitleOnly}>
+        <NoteLayout notes={notesTitleOnly}>
             <Container size="lg" px="xs">
                 <Grid>
                     <Grid.Col span={11}>

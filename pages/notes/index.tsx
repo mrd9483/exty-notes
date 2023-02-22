@@ -1,5 +1,5 @@
 import NoteLayout from '@/components/NoteLayout';
-import { Container, Card, Grid, Group, Text, ActionIcon, Modal, Box, Button, Center, validateJson } from '@mantine/core';
+import { ActionIcon, Box, Button, Card, Center, Container, Grid, Group, Modal, Text, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { IconCopy, IconTrash } from '@tabler/icons';
 import { MouseEvent, useState } from 'react';

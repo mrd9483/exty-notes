@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { AppShell, Header, Title, Group, ActionIcon, Menu, Drawer, useMantineTheme } from '@mantine/core';
+import { ActionIcon, AppShell, Drawer, Group, Header, Menu, Title, useMantineTheme } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconMenu2, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
