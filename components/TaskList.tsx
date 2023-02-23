@@ -112,7 +112,6 @@ const TaskList: React.FC<Props> = (props) => {
         </tbody>
         <tfoot>
             <tr>
-
                 <th>
                     {componentProps.showButtons && (
                         <Button loading={addLoading} onClick={handleAll} sx={{ width: '100%' }} variant="gradient">Show All</Button>

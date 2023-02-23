@@ -1,21 +1,22 @@
 import Layout from '@/components/Layout';
 import { ITimeEntry } from '@/data/models/TimeEntry';
-import { ActionIcon, Button, Container, Grid, Group, NumberInput, Select, Table, TextInput } from '@mantine/core';
+import { ActionIcon, Button, Container, Grid, Group, NumberInput, Table, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { useEffect, useState } from 'react';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconTrash } from '@tabler/icons';
-import { deleteEntry, getEntries, saveEntry } from '@/services/entries';
+import { ITimeEntryReport, deleteEntry, entryReport, getEntries, saveEntry } from '@/services/entries';
 import { timeService } from '@/utils/listeners';
+import TimeEntryReport from '@/components/TimeEntryReport';
 
 const TimeEntryIndex: React.FC = () => {
     const [datePicker, setDatePicker] = useState<DateRangePickerValue>();
     const [data, setData] = useState<ITimeEntry[]>([]);
-    const [categories, setCategories] = useState(['test', 'test2']);
     const [addLoading, setAddLoading] = useState(false);
     const [dataAdded, setDataAdded] = useState('');
+    const [dataReport, setDataReport] = useState<ITimeEntryReport[]>([]);
 
     const { data: session, status } = useSession();
 
@@ -24,46 +25,53 @@ const TimeEntryIndex: React.FC = () => {
     });
 
     const form = useForm({
-        validateInputOnBlur: true,
         initialValues: {
             date: new Date(),
             hours: 0,
             entry: '',
-            category: ''
         },
         validate: {
             date: isNotEmpty(),
-            category: isNotEmpty(),
             hours: isInRange({ min: 0.5, max: 24 }),
             entry: isNotEmpty()
         }
     });
 
     const handleLastWeekButton = async () => {
+        const start = startOfWeek(new Date());
+        const end = endOfWeek(new Date());
         setDatePicker([
-            startOfWeek(new Date()),
-            endOfWeek(new Date())
+            start,
+            end
         ]);
 
-        setData(await getEntries(session?.user.id, startOfWeek(new Date()), endOfWeek(new Date())));
+        getEntriesUI(start, end);
     };
 
     const handleDatePicker = async (dates: (Date | null)[]) => {
         setDatePicker([dates[0], dates[1]]);
         if ((dates[0] && dates[1]) || (!dates[0] && !dates[1])) {
-            setData(await getEntries(session?.user.id, dates[0], dates[1]));
+            getEntriesUI(dates[0], dates[1]);
         }
+    };
+
+    const getEntriesUI = (...params: (Date | null | undefined)[]) => {
+        getEntries(session?.user.id, params?.[0], params?.[1])
+            .then((d) => {
+                setData(d);
+                setDataReport(entryReport(d));
+            });
     };
 
     useEffect(() => {
         const runEffect = async () => {
-            console.log(status);
             if (status === 'authenticated') {
-                setData(await getEntries(session?.user.id));
+                await handleLastWeekButton();
             }
         };
 
         runEffect();
+
     }, [status, dataAdded]);
 
     const handleAdd = async () => {
@@ -71,12 +79,11 @@ const TimeEntryIndex: React.FC = () => {
 
             setAddLoading(true);
 
-            await saveEntry(session?.user.id as string, form.values.date, form.values.entry, form.values.hours, form.values.category)
-                .then(() => getEntries(session?.user.id, datePicker?.[0], datePicker?.[1])
-                    .then((d) => {
-                        setData(d);
-                        setAddLoading(false);
-                    }));
+            await saveEntry(session?.user.id as string, form.values.date, form.values.entry, form.values.hours)
+                .then(() => {
+                    getEntriesUI(datePicker?.[0], datePicker?.[1]);
+                    setAddLoading(false);
+                });
 
             form.reset();
         }
@@ -84,29 +91,25 @@ const TimeEntryIndex: React.FC = () => {
 
     const handleDeleteEntry = async (_id: string) => {
         deleteEntry(_id)
-            .then(() => getEntries(session?.user.id, datePicker?.[0], datePicker?.[1])
-                .then((d) => {
-                    setData(d);
-                }));
+            .then(() => getEntriesUI(datePicker?.[0], datePicker?.[1]));
     };
 
     return (
-        <Layout menu={<></>}>
+        <Layout menu={<TimeEntryReport report={dataReport} />}>
             <Container size="lg" px="xs">
                 <Grid>
-                    <Grid.Col sm={10} span={8}>
+                    <Grid.Col span='auto'>
                         <DateRangePicker mb="md" placeholder='Pick date range' value={datePicker} onChange={handleDatePicker} firstDayOfWeek='sunday' />
                     </Grid.Col>
-                    <Grid.Col sm={2} span={4}>
-                        <Button sx={{ width: '100%' }} variant="outline" onClick={handleLastWeekButton}>Current Week</Button>
+                    <Grid.Col md={2} sm={3} span={5}>
+                        <Button sx={{ width: '100%' }} variant="subtle" onClick={handleLastWeekButton}>Current Week</Button>
                     </Grid.Col>
                 </Grid>
-                <Table withBorder withColumnBorders>
+                <Table withBorder withColumnBorders style={{ 'background': '#fff' }}>
                     <thead>
                         <tr>
-                            <th style={{ width: 150 }}>Date</th>
+                            <th style={{ width: 125 }}>Date</th>
                             <th style={{ width: 100 }}>Hours</th>
-                            <th style={{ width: 200 }}>Category</th>
                             <th>Entry</th>
                         </tr>
                     </thead>
@@ -115,7 +118,6 @@ const TimeEntryIndex: React.FC = () => {
                             <tr key={d._id}>
                                 <td>{format(new Date(d.date), 'MM/dd/yyyy')}</td>
                                 <td>{d.hours}</td>
-                                <td>{d.category}</td>
                                 <td>
                                     <Group position='apart'>
                                         {d.entry}
@@ -126,35 +128,25 @@ const TimeEntryIndex: React.FC = () => {
                                 </td>
                             </tr>
                         ))}
-                    </tbody>
-                    <tfoot>
                         <tr>
-                            <th><DatePicker clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" /></th>
-                            <th><NumberInput {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" /></th>
-                            <th>
-                                <Select
-                                    {...form.getInputProps('category')}
-                                    getCreateLabel={(query) => `+ ${query}`}
-                                    searchable
-                                    creatable
-                                    data={categories}
-                                    onCreate={(query) => {
-                                        setCategories((category) => [...category, query]);
-                                        return query;
-                                    }}
-                                /></th>
-                            <th>
+                            <td>
+                                <DatePicker clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" />
+                            </td>
+                            <td>
+                                <NumberInput {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" />
+                            </td>
+                            <td>
                                 <Grid>
-                                    <Grid.Col sm={10} span={8}>
+                                    <Grid.Col span='auto'>
                                         <TextInput {...form.getInputProps('entry')} placeholder="Entry" />
                                     </Grid.Col>
-                                    <Grid.Col ta='right' sm={2} span={4}>
-                                        <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient">Add</Button>
+                                    <Grid.Col span={2}>
+                                        <Button loading={addLoading} sx={{ width: '100%' }} onClick={handleAdd} variant="gradient">Add</Button>
                                     </Grid.Col>
                                 </Grid>
-                            </th>
+                            </td>
                         </tr>
-                    </tfoot>
+                    </tbody>
                 </Table>
             </Container>
         </Layout>

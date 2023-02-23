@@ -5,7 +5,6 @@ interface ITimeEntry {
     user: string,
     updated: Date,
     entry: string,
-    category: string,
     date: Date,
     hours: number
 }
