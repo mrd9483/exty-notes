@@ -16,7 +16,7 @@ const taskSchema = new Schema({
     updated: { type: Date, default: Date.now },
     note: { type: Schema.Types.ObjectId, ref: 'Note', require: false },
     task: String,
-    isComplete: Boolean,
+    isComplete: { type: Boolean, default: false },
     dateCompleted: Date,
     dateScheduled: Date
 });

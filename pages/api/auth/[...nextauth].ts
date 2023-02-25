@@ -3,8 +3,6 @@ import NextAuth, { NextAuthOptions } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import clientPromise from '../../../lib/mongodb';
-import User from '@/data/models/User';
-import DbConnection from '@/data/DbConnection';
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, authOptions);
 export default authHandler;
@@ -33,11 +31,7 @@ const authOptions: NextAuthOptions = {
     callbacks: {
         session: async ({ session, token }) => {
             if (session?.user) {
-                await DbConnection();
-                
-                const user = await User.findById(token.sub);
                 session.user.id = token.sub;
-                session.user.darkMode = user.darkMode ?? false;
             }
 
             return session;

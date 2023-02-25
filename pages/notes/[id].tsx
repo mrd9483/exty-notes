@@ -3,7 +3,7 @@ import { Link, RichTextEditor } from '@mantine/tiptap';
 import Underline from '@tiptap/extension-underline';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Container, Grid, Group, Input, Text, ThemeIcon, validateJson } from '@mantine/core';
+import { Box, Container, Group, Input, Text, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote, INoteTitleOnly } from '@/data/models/Note';
 import { useForm } from '@mantine/form';
@@ -130,18 +130,9 @@ const Page: React.FC<Props> = (props) => {
     return (
         <NoteLayout notes={notesTitleOnly}>
             <Container size="lg" px="xs">
-                <Grid>
-                    <Grid.Col span={11}>
-                        <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" mb="xl" styles={() => ({ input: { borderBottom: '1px solid' } })} radius="xs" size="md" />
-                    </Grid.Col>
-                    <Grid.Col ta="center" span={1}>
-                        <Container>
-                            <ThemeIcon hidden={!saveIndicator} radius="xl" size="xl" color="dark">
-                                <IconDeviceFloppy />
-                            </ThemeIcon>
-                        </Container>
-                    </Grid.Col>
-                </Grid>
+                <Box>
+                    <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" mb="xl" styles={() => ({ input: { height: '35px', borderBottom: '1px solid', fontWeight: 'bold' } })} radius="xs" size="xl" />
+                </Box>
                 <Group position='apart'>
                     <Text c="dimmed">Created {formatDistanceToNow(new mongoose.Types.ObjectId(props.note._id).getTimestamp())} ago</Text>
                     <Text c="dimmed">Modified {modifiedHuman} ago</Text>
@@ -212,6 +203,11 @@ const Page: React.FC<Props> = (props) => {
                     <RichTextEditor.Content />
                 </RichTextEditor>
             </Container>
+            <Box sx={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                <ThemeIcon hidden={!saveIndicator} radius="xl" size="xl" color="dark">
+                    <IconDeviceFloppy />
+                </ThemeIcon>
+            </Box>
         </NoteLayout>
     );
 };

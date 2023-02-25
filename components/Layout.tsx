@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { ActionIcon, AppShell, Drawer, Group, Header, Menu, Switch, Title, useMantineColorScheme, useMantineTheme } from '@mantine/core';
+import { ActionIcon, AppShell, Drawer, Group, Header, Menu, Title, useMantineTheme } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconMenu2, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -25,13 +25,11 @@ const Layout: React.FC<Props> = (props) => {
     const { data: session } = useSession();
     const router = useRouter();
     const theme = useMantineTheme();
-    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
     const [commandOpened, setCommandOpened] = useState(false);
     const [triggerFocus, setTriggerFocus] = useState(false);
     const [commandDisabled, setCommandDisabled] = useState(false);
     const [taskOpened, setTaskOpened] = useState(false);
-    const [isDark, setIsDark] = useState(session?.user.darkMode);
 
     useWindowEvent('keydown', (event) => {
         if (event.code === 'Slash' && (event.ctrlKey || event.metaKey)) {
@@ -121,11 +119,6 @@ const Layout: React.FC<Props> = (props) => {
         }
     };
 
-    const handleThemeModeChange = () => {
-        setIsDark((o) => !o);
-        toggleColorScheme();
-    };
-
     return (
         <AppShell
             padding="md"
@@ -146,7 +139,6 @@ const Layout: React.FC<Props> = (props) => {
                             <ActionIcon variant='gradient' size='lg' onClick={handleClick}>
                                 <IconSlash size={20} stroke={3} />
                             </ActionIcon>
-                            <Switch checked={isDark} onChange={handleThemeModeChange} />
                             <Menu shadow="xl" width={200} radius="sm">
                                 <Menu.Target>
                                     <ActionIcon variant='gradient' size="lg">
@@ -191,7 +183,7 @@ const Layout: React.FC<Props> = (props) => {
                 position="right"
             >
                 {
-                    <TaskList showCompleted={false} showButtons={false} />
+                    <TaskList showComplete={false} />
                 }
             </Drawer>
         </AppShell>

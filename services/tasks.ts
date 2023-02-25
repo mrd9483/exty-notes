@@ -11,9 +11,9 @@ const saveTask = async (userId: string, task: string, dateCompleted?: Date) => {
     return await res.json();
 };
 
-const getTasks = async (userId?: string, incompletedOnly?: boolean) => {
+const getTasks = async (userId?: string, returnComplete?: boolean) => {
 
-    return await fetch(`${URL}/user/${userId}?incompletedOnly=${incompletedOnly}`)
+    return await fetch(`${URL}/user/${userId}?returnComplete=${returnComplete}`)
         .then(res => res.json());
 };
 
