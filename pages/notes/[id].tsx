@@ -1,8 +1,4 @@
-import NoteLayout from '@/components/NoteLayout';
-import { Link, RichTextEditor } from '@mantine/tiptap';
-import Underline from '@tiptap/extension-underline';
-import { useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import NoteLayout from '@/components/layouts/NoteLayout';
 import { Box, Container, Group, Input, Text, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote, INoteTitleOnly } from '@/data/models/Note';
@@ -12,20 +8,16 @@ import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
-import { IconClockHour8, IconColumnInsertLeft, IconColumnInsertRight, IconDeviceFloppy, IconRowInsertBottom, IconRowInsertTop, IconTable, IconTableOff } from '@tabler/icons';
+import { IconDeviceFloppy } from '@tabler/icons';
 
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import Table from '@tiptap/extension-table';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import TableRow from '@tiptap/extension-table-row';
-import { RiDeleteColumn, RiDeleteRow } from 'react-icons/ri';
 import mongoose from 'mongoose';
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import format from 'date-fns/format';
 import { useSession } from 'next-auth/react';
+import TextEditor from '@/components/shared/TextEditor';
+import getEditor from '@/utils/editor';
+import { templateService } from '@/utils/listeners';
+import { getTemplateByShortcut } from '@/services/templates';
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -55,26 +47,18 @@ const Page: React.FC<Props> = (props) => {
         content: JSON.parse(contentJson)
     };
 
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Link,
-            Underline,
-            Table.configure({ resizable: true }),
-            TableCell,
-            TableHeader,
-            TableRow,
-            TaskList,
-            TaskItem
-        ],
-        content
-    });
+    const editor = getEditor(content);
 
     const form = useForm({
         initialValues: {
             title: props.note.title,
             note: props.note.note
         }
+    });
+
+    templateService.getData().subscribe({
+        next: (shortcut) => getTemplateByShortcut(session?.user.id as string, shortcut as string)
+            .then(res => editor?.chain().focus().insertContent(res.template))
     });
 
     const noteId = props.note._id;
@@ -138,70 +122,7 @@ const Page: React.FC<Props> = (props) => {
                     <Text c="dimmed">Modified {modifiedHuman} ago</Text>
                 </Group>
 
-                <RichTextEditor editor={editor}>
-                    <RichTextEditor.Toolbar sticky stickyOffset={60}>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Bold />
-                            <RichTextEditor.Italic />
-                            <RichTextEditor.Underline />
-                            <RichTextEditor.Strikethrough />
-                            <RichTextEditor.ClearFormatting />
-                            <RichTextEditor.Code />
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.H1 />
-                            <RichTextEditor.H2 />
-                            <RichTextEditor.H3 />
-                            <RichTextEditor.H4 />
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Blockquote />
-                            <RichTextEditor.Hr />
-                            <RichTextEditor.BulletList />
-                            <RichTextEditor.OrderedList />
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Link />
-                            <RichTextEditor.Unlink />
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}>
-                                <IconTable stroke={1} color='#333' />
-                            </RichTextEditor.Control>
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addColumnBefore().run()}>
-                                <IconColumnInsertLeft stroke={1} color='#000' />
-                            </RichTextEditor.Control>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addColumnAfter().run()}>
-                                <IconColumnInsertRight stroke={1} color='#000' />
-                            </RichTextEditor.Control>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addRowBefore().run()}>
-                                <IconRowInsertTop stroke={1} color='#000' />
-                            </RichTextEditor.Control>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().addRowAfter().run()}>
-                                <IconRowInsertBottom stroke={1} color='#000' />
-                            </RichTextEditor.Control>
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteTable().run()}>
-                                <IconTableOff stroke={1} color='#000' />
-                            </RichTextEditor.Control>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteColumn().run()}>
-                                <RiDeleteColumn color='#666' size={24} />
-                            </RichTextEditor.Control>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().deleteRow().run()}>
-                                <RiDeleteRow color='#666' size={24} />
-                            </RichTextEditor.Control>
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Control onClick={() => editor?.chain().focus().insertContent(`<p><strong>${format(new Date(), 'MM/dd/yyyy h:mm a')}</strong></p>`).unsetBold().run()}>
-                                <IconClockHour8 stroke={1} color='#000' />
-                            </RichTextEditor.Control>
-                        </RichTextEditor.ControlsGroup>
-                    </RichTextEditor.Toolbar>
-                    <RichTextEditor.Content />
-                </RichTextEditor>
+                <TextEditor editor={editor} />
             </Container>
             <Box sx={{ position: 'absolute', bottom: '20px', right: '20px' }}>
                 <ThemeIcon hidden={!saveIndicator} radius="xl" size="xl" color="dark">

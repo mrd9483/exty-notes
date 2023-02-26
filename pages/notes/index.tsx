@@ -1,4 +1,4 @@
-import NoteLayout from '@/components/NoteLayout';
+import NoteLayout from '@/components/layouts/NoteLayout';
 import { ActionIcon, Box, Button, Card, Center, Container, Grid, Group, Modal, Text, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { IconCopy, IconTrash } from '@tabler/icons';

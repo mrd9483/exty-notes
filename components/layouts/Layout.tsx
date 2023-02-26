@@ -3,7 +3,7 @@ import { ActionIcon, AppShell, Drawer, Group, Header, Menu, Title, useMantineThe
 import { ReactNode, useState } from 'react';
 import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconMenu2, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import CommandLineDialog from './CommandLineDialog';
+import CommandLineDialog from '../commandLine/CommandLineDialog';
 import { useWindowEvent } from '@mantine/hooks';
 import CLIParser from '@/utils/CLIParser';
 import { addNote } from '@/services/notes';
@@ -12,13 +12,13 @@ import { saveEntry } from '@/services/entries';
 import * as chrono from 'chrono-node';
 import { toast } from 'react-toastify';
 import { saveTask } from '@/services/tasks';
-import { taskService, timeService } from '@/utils/listeners';
-import TaskList from './TaskList';
+import { taskService, templateService, timeService } from '@/utils/listeners';
+import TaskList from '../tasks/TaskList';
 import Link from 'next/link';
 
 type Props = {
     children: ReactNode;
-    menu: ReactNode;
+    menu?: ReactNode;
 };
 
 const Layout: React.FC<Props> = (props) => {
@@ -71,6 +71,11 @@ const Layout: React.FC<Props> = (props) => {
         setCommandDisabled(false);
     };
 
+    const addTemplateOnEnter = async (shortcut: string) => {
+        templateService.setData(shortcut);
+        setCommandDisabled(true);
+    };
+
     const handleEnter = async (command: string) => {
         if (!commandDisabled) {
             setCommandDisabled(true);
@@ -84,14 +89,17 @@ const Layout: React.FC<Props> = (props) => {
                     ]
                 },
                 'task': { arguments: [{ optional: false, description: 'entry' }] },
+                't': { arguments: [{ optional: false, description: 'shortcut' }] },
                 'fart': {}
             },
                 {
                     'note': (...args: string[]) => { addNoteOnEnter(args.join(' ')); },
                     'time': (...args: string[]) => { addTimeOnEnter(args[0], args[1], args[2]); },
                     'task': (...args: string[]) => { addTaskOnEnter(args.join(' ')); },
+                    't': (...args: string[]) => { addTemplateOnEnter(args[0]); },
                     'fart': () => { toast.info('💩💩💩'); setCommandDisabled(false); }
-                });
+                }
+            );
             try {
                 p.parse(command);
             } catch (error) {
@@ -122,7 +130,7 @@ const Layout: React.FC<Props> = (props) => {
     return (
         <AppShell
             padding="md"
-            navbar={<>{props.menu}</>}
+            navbar={<>{props.menu ?? <></>}</>}
             header={
                 <Header height={65} p="xs" sx={() => ({ background: 'linear-gradient(90deg, rgba(58,110,250,1) 0%, rgba(58,60,180,1) 100%);' })}>
                     <Group position="apart" align="center">

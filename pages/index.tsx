@@ -1,6 +1,6 @@
-import Layout from '@/components/Layout';
+import CommandLine from '@/components/commandLine/CommandLine';
+import Layout from '@/components/layouts/Layout';
 import { Container } from '@mantine/core';
-import CommandLine from '@/components/CommandLine';
 
 const Home: React.FC = () => {
 

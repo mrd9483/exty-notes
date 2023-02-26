@@ -1,5 +1,5 @@
-import NoNoteLayout from '@/components/NoNoteLayout';
-import TaskList from '@/components/TaskList';
+import NoNoteLayout from '@/components/layouts/NoNoteLayout';
+import TaskList from '@/components/tasks/TaskList';
 import { Container, Tabs } from '@mantine/core';
 import { IconCheckbox, IconSquare } from '@tabler/icons';
 import { useState } from 'react';

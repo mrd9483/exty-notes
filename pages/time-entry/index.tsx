@@ -1,4 +1,4 @@
-import Layout from '@/components/Layout';
+import Layout from '@/components/layouts/Layout';
 import { ITimeEntry } from '@/data/models/TimeEntry';
 import { ActionIcon, Button, Container, Grid, Group, NumberInput, Table, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
@@ -9,7 +9,7 @@ import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconTrash } from '@tabler/icons';
 import { ITimeEntryReport, deleteEntry, entryReport, getEntries, saveEntry } from '@/services/entries';
 import { timeService } from '@/utils/listeners';
-import TimeEntryReport from '@/components/TimeEntryReport';
+import TimeEntryReport from '@/components/timeEntries/TimeEntryReport';
 
 const TimeEntryIndex: React.FC = () => {
     const [datePicker, setDatePicker] = useState<DateRangePickerValue>();
