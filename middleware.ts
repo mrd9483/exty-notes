@@ -1,2 +1,2 @@
 export { default } from 'next-auth/middleware';
-export const config = { matcher: ['/time-entry', '/notes', '/api'] };
+export const config = { matcher: ['/time-entry', '/notes', '/api', '/tasks'] };

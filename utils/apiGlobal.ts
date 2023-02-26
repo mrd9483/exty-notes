@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import ApiError from './errors/ApiError';
-import mongoose, { Model, Error } from 'mongoose';
+import mongoose, { CallbackError, Document, Error, Model } from 'mongoose';
 import ResourceNotFoundError from './errors/ResourceNotFoundError';
 
 export default async function apiGlobal(req: NextApiRequest, res: NextApiResponse, actions: { [key: string]: () => Promise<void> }) {
@@ -38,6 +38,26 @@ function GetByIdGlobal<T>(model: Model<T>, res: NextApiResponse, id: string) {
     };
 }
 
+function saveApiGlobal<T>(model: Document<T>, res: NextApiResponse) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    model.save((err: CallbackError, obj: any) => {
+        if (err instanceof Error.ValidationError) handleValidationError(err, res);
+        else res.status(200).json(obj);
+    });
+}
+
+function globalDelete<T>(model: Model<T>, res: NextApiResponse, id: string) {
+    return async () => {
+        if (!mongoose.isObjectIdOrHexString(id)) {
+            throw new ApiError('Id is not fomatted correctly', 400);
+        }
+
+        const obj = await model.deleteOne({ _id: id });
+
+        res.status(200).json(obj);
+    };
+}
+
 function handleValidationError(err: Error.ValidationError, res: NextApiResponse) {
     const messages = [];
     for (const field in err.errors) {
@@ -46,4 +66,4 @@ function handleValidationError(err: Error.ValidationError, res: NextApiResponse)
     res.status(422).json({ messages });
 }
 
-export { GetByIdGlobal, handleValidationError };
+export { saveApiGlobal, GetByIdGlobal, globalDelete, handleValidationError };

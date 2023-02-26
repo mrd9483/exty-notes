@@ -15,6 +15,7 @@ const CommandLine: React.FC<Props> = (props) => {
     const handleKeyDown = (event: { key: string; }) => {
         if (event.key === 'Enter' && props.onEnter) {
             props.onEnter(value);
+            setValue('');
         }
     };
 

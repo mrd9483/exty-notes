@@ -5,8 +5,8 @@ const userSchema = new Schema({
     lastName: String,
     email: String,
     active: Boolean,
-    categories: [String],
-    updated: { type: Date, default: Date.now }
+    updated: { type: Date, default: Date.now },
+    darkMode: Boolean
 });
 
 const User = models.User || model('User', userSchema);

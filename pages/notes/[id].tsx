@@ -1,41 +1,40 @@
-import NoteLayout from '@/components/NoteLayout';
-import { RichTextEditor, Link } from '@mantine/tiptap';
-import Underline from '@tiptap/extension-underline';
-import { useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { Input, Container, Grid, ThemeIcon, validateJson } from '@mantine/core';
+import NoteLayout from '@/components/layouts/NoteLayout';
+import { Box, Container, Group, Input, Text, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
-import { INote } from '@/data/models/Note';
-import { INavigation } from '@/data/models/Navigation';
+import { INote, INoteTitleOnly } from '@/data/models/Note';
 import { useForm } from '@mantine/form';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
-import { saveContent } from '../../services/notes';
+import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
 import { IconDeviceFloppy } from '@tabler/icons';
+
+import mongoose from 'mongoose';
+
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { useSession } from 'next-auth/react';
+import TextEditor from '@/components/shared/TextEditor';
+import getEditor from '@/utils/editor';
+import { templateService } from '@/utils/listeners';
+import { getTemplateByShortcut } from '@/services/templates';
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
 
     const { id } = context.query;
 
-    const resNavigation = await fetch(`http://localhost:3000/api/navigations/user/${session?.user.id}`);
-    const dataNavigation = await resNavigation.json();
-
-    const resNote = await fetch(`http://localhost:3000/api/notes/${id}`);
-    const dataNote = await resNote.json();
-
     return {
         props: {
-            navigation: dataNavigation,
-            note: dataNote
+            notesTitleOnly: await getNotesByUserId(session?.user.id as string, true),
+            note: await getNote(id as string)
         }
     };
 };
 
 type Props = {
-    navigation: INavigation;
+    notesTitleOnly: INoteTitleOnly[];
     note: INote;
 }
 
@@ -48,18 +47,7 @@ const Page: React.FC<Props> = (props) => {
         content: JSON.parse(contentJson)
     };
 
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            Link,
-            Underline
-        ],
-        content
-    });
-
-    const [noteId,] = useState(props.note._id);
-    const [debouncedEditor] = useDebounce(editor?.state.doc.content, 2000, { maxWait: 15000 });
-    const [saveIndicator, setSaveIndicator] = useState(false);
+    const editor = getEditor(content);
 
     const form = useForm({
         initialValues: {
@@ -68,6 +56,20 @@ const Page: React.FC<Props> = (props) => {
         }
     });
 
+    templateService.getData().subscribe({
+        next: (shortcut) => getTemplateByShortcut(session?.user.id as string, shortcut as string)
+            .then(res => editor?.chain().focus().insertContent(res.template))
+    });
+
+    const noteId = props.note._id;
+    const [debouncedEditor] = useDebounce(editor?.state.doc.content, 2000, { maxWait: 15000 });
+    const [debouncedTitle] = useDebounce(form?.values.title, 2000, { maxWait: 15000 });
+    const [saveIndicator, setSaveIndicator] = useState(false);
+    const [modified, setModified] = useState(new Date());
+    const [modifiedHuman, setModifiedHuman] = useState('');
+    const [notesTitleOnly, setNotesTitleOnly] = useState<INoteTitleOnly[]>(props.notesTitleOnly);
+    const { data: session } = useSession();
+
     useEffect(() => {
         if (!debouncedEditor)
             return;
@@ -75,71 +77,58 @@ const Page: React.FC<Props> = (props) => {
         if (loaded.current) {
             setSaveIndicator(true);
             saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
-                .then(() => setSaveIndicator(false));
+                .then((res) => {
+                    setSaveIndicator(false);
+                    setModified(new Date(res.updated));
+                });
+
         } else {
             loaded.current = true;
         }
 
-    }, [debouncedEditor, form.values.title]);
+    }, [debouncedEditor]);
+
+    useEffect(() => {
+        if (!debouncedEditor)
+            return;
+
+        setSaveIndicator(true);
+        saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
+            .then((res) => {
+                setSaveIndicator(false);
+                setModified(new Date(res.updated));
+
+                getNotesByUserId(session?.user.id as string, true).then(data => {
+                    setNotesTitleOnly(data);
+                });
+            });
+    }, [debouncedTitle]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setModifiedHuman(formatDistanceToNow(modified, { includeSeconds: true }));
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [modified]);
 
     return (
-        <NoteLayout navigation={props.navigation}>
+        <NoteLayout notes={notesTitleOnly}>
             <Container size="lg" px="xs">
-                <Grid>
-                    <Grid.Col span={11}>
-                        <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" mb="xl" styles={() => ({ input: { borderBottom: '1px solid' } })} radius="xs" size="md" />
-                    </Grid.Col>
-                    <Grid.Col ta="center" span={1}>
-                        <Container>
-                            <ThemeIcon hidden={!saveIndicator} radius="xl" size="xl" color="dark">
-                                <IconDeviceFloppy />
-                            </ThemeIcon>
-                        </Container>
-                    </Grid.Col>
-                </Grid>
-                <RichTextEditor editor={editor}>
-                    <RichTextEditor.Toolbar sticky stickyOffset={60}>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Bold />
-                            <RichTextEditor.Italic />
-                            <RichTextEditor.Underline />
-                            <RichTextEditor.Strikethrough />
-                            <RichTextEditor.ClearFormatting />
-                            <RichTextEditor.Highlight />
-                            <RichTextEditor.Code />
-                        </RichTextEditor.ControlsGroup>
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.H1 />
-                            <RichTextEditor.H2 />
-                            <RichTextEditor.H3 />
-                            <RichTextEditor.H4 />
-                        </RichTextEditor.ControlsGroup>
+                <Box>
+                    <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" mb="xl" styles={() => ({ input: { height: '35px', borderBottom: '1px solid', fontWeight: 'bold' } })} radius="xs" size="xl" />
+                </Box>
+                <Group position='apart'>
+                    <Text c="dimmed">Created {formatDistanceToNow(new mongoose.Types.ObjectId(props.note._id).getTimestamp())} ago</Text>
+                    <Text c="dimmed">Modified {modifiedHuman} ago</Text>
+                </Group>
 
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Blockquote />
-                            <RichTextEditor.Hr />
-                            <RichTextEditor.BulletList />
-                            <RichTextEditor.OrderedList />
-                            <RichTextEditor.Subscript />
-                            <RichTextEditor.Superscript />
-                        </RichTextEditor.ControlsGroup>
-
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.Link />
-                            <RichTextEditor.Unlink />
-                        </RichTextEditor.ControlsGroup>
-
-                        <RichTextEditor.ControlsGroup>
-                            <RichTextEditor.AlignLeft />
-                            <RichTextEditor.AlignCenter />
-                            <RichTextEditor.AlignJustify />
-                            <RichTextEditor.AlignRight />
-                        </RichTextEditor.ControlsGroup>
-                    </RichTextEditor.Toolbar>
-
-                    <RichTextEditor.Content />
-                </RichTextEditor>
+                <TextEditor editor={editor} />
             </Container>
+            <Box sx={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+                <ThemeIcon hidden={!saveIndicator} radius="xl" size="xl" color="dark">
+                    <IconDeviceFloppy />
+                </ThemeIcon>
+            </Box>
         </NoteLayout>
     );
 };

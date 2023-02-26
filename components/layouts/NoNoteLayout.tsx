@@ -1,13 +1,11 @@
 import { ReactNode } from 'react';
 import Layout from './Layout';
-import { INavigation } from '@/data/models/Navigation';
 
 type NoteProps = {
     children: ReactNode;
-    navigation: INavigation;
 };
 
-const TimeEntryLayout: React.FC<NoteProps> = (props) => {
+const NoNoteLayout: React.FC<NoteProps> = (props) => {
     return (
         <Layout menu={<></>}>
             {props.children}
@@ -15,4 +13,4 @@ const TimeEntryLayout: React.FC<NoteProps> = (props) => {
     );
 };
 
-export default TimeEntryLayout;
+export default NoNoteLayout;

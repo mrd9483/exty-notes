@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const GET = async () => {
-        const obj = await M.find(query).exec();
+        const obj = await M.find(query).sort('date').exec();
         res.status(200).json(obj);
     };
 

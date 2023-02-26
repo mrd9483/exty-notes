@@ -4,15 +4,16 @@ import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.min.css';
+import '../styles/noteStyle.scss';
 
 export default function App({ Component, pageProps }: AppProps) {
 
-  return (
-    <SessionProvider session={pageProps.session}>
-      <MantineProvider withGlobalStyles withNormalizeCSS theme={{ colorScheme: 'dark' }}>
-        <Component {...pageProps} />
-        <ToastContainer position="top-center" theme="colored" />
-      </MantineProvider>
-    </SessionProvider>
-  );
+    return (
+        <MantineProvider withGlobalStyles withNormalizeCSS>
+            <SessionProvider session={pageProps.session}>
+                    <Component {...pageProps} />
+                    <ToastContainer position="top-center" theme="colored" />
+            </SessionProvider>
+        </MantineProvider>
+    );
 }
