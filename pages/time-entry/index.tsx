@@ -1,12 +1,12 @@
 import Layout from '@/components/layouts/Layout';
 import { ITimeEntry } from '@/data/models/TimeEntry';
-import { ActionIcon, Button, Container, Grid, Group, NumberInput, Table, TextInput } from '@mantine/core';
+import { ActionIcon, Button, Container, Grid, NumberInput, Table, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { endOfWeek, format, startOfWeek } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
-import { IconTrash } from '@tabler/icons';
+import { IconSquareRoundedPlus, IconTrash } from '@tabler/icons';
 import { ITimeEntryReport, deleteEntry, entryReport, getEntries, saveEntry } from '@/services/entries';
 import { timeService } from '@/utils/listeners';
 import TimeEntryReport from '@/components/timeEntries/TimeEntryReport';
@@ -17,7 +17,8 @@ const TimeEntryIndex: React.FC = () => {
     const [addLoading, setAddLoading] = useState(false);
     const [dataAdded, setDataAdded] = useState('');
     const [dataReport, setDataReport] = useState<ITimeEntryReport[]>([]);
-
+    
+    const textinput = useRef<HTMLInputElement>(null);
     const { data: session, status } = useSession();
 
     timeService.getData().subscribe((id) => {
@@ -83,9 +84,16 @@ const TimeEntryIndex: React.FC = () => {
                 .then(() => {
                     getEntriesUI(datePicker?.[0], datePicker?.[1]);
                     setAddLoading(false);
+                    textinput.current?.focus();
                 });
 
             form.reset();
+        }
+    };
+
+    const handleEnter = async (event: { key: string; }) => {
+        if (event.key === 'Enter') {
+            await handleAdd();
         }
     };
 
@@ -96,7 +104,7 @@ const TimeEntryIndex: React.FC = () => {
 
     return (
         <Layout menu={<TimeEntryReport report={dataReport} />}>
-            <Container size="lg" px="xs">
+            <Container size="md" px="xs">
                 <Grid>
                     <Grid.Col span='auto'>
                         <DateRangePicker mb="md" placeholder='Pick date range' value={datePicker} onChange={handleDatePicker} firstDayOfWeek='sunday' />
@@ -108,42 +116,41 @@ const TimeEntryIndex: React.FC = () => {
                 <Table withBorder withColumnBorders style={{ 'background': '#fff' }}>
                     <thead>
                         <tr>
-                            <th style={{ width: 125 }}>Date</th>
-                            <th style={{ width: 100 }}>Hours</th>
                             <th>Entry</th>
+                            <th style={{ width: 100 }}>Hours</th>
+                            <th style={{ width: 125 }}>Date</th>
+                            <th style={{ width: 50 }}>&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
                         {data.map((d: ITimeEntry) => (
                             <tr key={d._id}>
-                                <td>{format(new Date(d.date), 'MM/dd/yyyy')}</td>
-                                <td>{d.hours}</td>
                                 <td>
-                                    <Group position='apart'>
-                                        {d.entry}
-                                        <ActionIcon size="md" onClick={() => handleDeleteEntry(d._id)}>
-                                            <IconTrash size={14} />
-                                        </ActionIcon>
-                                    </Group>
+                                    {d.entry}
+                                </td>
+                                <td>{d.hours}</td>
+                                <td>{format(new Date(d.date), 'MM/dd/yyyy')}</td>
+                                <td>
+                                    <ActionIcon size="md" variant='subtle' onClick={() => handleDeleteEntry(d._id)}>
+                                        <IconTrash size={14} />
+                                    </ActionIcon>
                                 </td>
                             </tr>
                         ))}
                         <tr>
                             <td>
-                                <DatePicker clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" />
+                                <TextInput onKeyDown={handleEnter} ref={textinput} {...form.getInputProps('entry')} placeholder="Entry" />
                             </td>
                             <td>
-                                <NumberInput {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" />
+                                <NumberInput onKeyDown={handleEnter} {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" />
                             </td>
                             <td>
-                                <Grid>
-                                    <Grid.Col span='auto'>
-                                        <TextInput {...form.getInputProps('entry')} placeholder="Entry" />
-                                    </Grid.Col>
-                                    <Grid.Col span={2}>
-                                        <Button loading={addLoading} sx={{ width: '100%' }} onClick={handleAdd} variant="gradient">Add</Button>
-                                    </Grid.Col>
-                                </Grid>
+                                <DatePicker onKeyDown={handleEnter} clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" />
+                            </td>
+                            <td>
+                                <ActionIcon variant='gradient' size="md" loading={addLoading} onClick={handleAdd}>
+                                    <IconSquareRoundedPlus size={16} />
+                                </ActionIcon>
                             </td>
                         </tr>
                     </tbody>
