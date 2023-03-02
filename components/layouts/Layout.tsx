@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { ActionIcon, AppShell, Drawer, Group, Header, Menu, Title, useMantineTheme } from '@mantine/core';
+import { ActionIcon, AppShell, Burger, Drawer, Group, Header, MediaQuery, Menu, Title, useMantineTheme } from '@mantine/core';
 import { ReactNode, useState } from 'react';
 import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconMenu2, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -30,6 +30,7 @@ const Layout: React.FC<Props> = (props) => {
     const [triggerFocus, setTriggerFocus] = useState(false);
     const [commandDisabled, setCommandDisabled] = useState(false);
     const [taskOpened, setTaskOpened] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useWindowEvent('keydown', (event) => {
         if (event.code === 'Slash' && (event.ctrlKey || event.metaKey)) {
@@ -120,17 +121,10 @@ const Layout: React.FC<Props> = (props) => {
         setTaskOpened(true);
     };
 
-    const handleTime = () => {
-        setCommandOpened((o) => !o);
-        if (commandOpened) {
-            setTriggerFocus((t) => !t);
-        }
-    };
-
     return (
         <AppShell
             padding="md"
-            navbar={<>{props.menu ?? <></>}</>}
+            navbar={<MediaQuery smallerThan="sm" styles={{ display: 'none' }}>{props.menu ?? <></>}</MediaQuery>}
             header={
                 <Header height={65} p="xs" sx={() => ({ background: 'linear-gradient(90deg, rgba(58,110,250,1) 0%, rgba(58,60,180,1) 100%);' })}>
                     <Group position="apart" align="center">
@@ -138,20 +132,17 @@ const Layout: React.FC<Props> = (props) => {
                             <Title sx={{ color: '#ffffff' }}>notes for .me</Title>
                         </Link>
                         <Group>
-                            <ActionIcon variant='gradient' size='lg' onClick={handleTime}>
-                                <IconClockHour8 size={20} stroke={3} />
+                            <ActionIcon variant='subtle' size='lg' onClick={handleTask}>
+                                <IconCheckbox size={24} color='white' stroke={3} />
                             </ActionIcon>
-                            <ActionIcon variant='gradient' size='lg' onClick={handleTask}>
-                                <IconCheckbox size={20} stroke={3} />
-                            </ActionIcon>
-                            <ActionIcon variant='gradient' size='lg' onClick={handleClick}>
-                                <IconSlash size={20} stroke={3} />
-                            </ActionIcon>
+                            <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
+                                <ActionIcon variant='subtle' size='lg' onClick={handleClick}>
+                                    <IconSlash color='white' size={24} stroke={3} />
+                                </ActionIcon>
+                            </MediaQuery>
                             <Menu shadow="xl" width={200} radius="sm">
                                 <Menu.Target>
-                                    <ActionIcon variant='gradient' size="lg">
-                                        <IconMenu2 size={20} stroke={3} />
-                                    </ActionIcon>
+                                    <Burger color='white' opened={menuOpen} onClick={() => setMenuOpen((o) => !o)} title="menu" />
                                 </Menu.Target>
                                 {session ?
                                     <Menu.Dropdown>

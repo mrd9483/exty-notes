@@ -83,7 +83,7 @@ const Home: React.FC<Props> = (props) => {
                     {props.notes.map(n => (
                         <Grid.Col sx={{
                             cursor: 'pointer'
-                        }} onClick={() => handleNavigation(n._id)} key={n._id} span={4}>
+                        }} onClick={() => handleNavigation(n._id)} key={n._id} sm={6} md={4} span={12}>
                             <Card withBorder shadow="sm" radius="md">
                                 <Card.Section withBorder inheritPadding py="xs">
                                     <Group position="apart">

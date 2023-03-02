@@ -1,5 +1,5 @@
 import NoteLayout from '@/components/layouts/NoteLayout';
-import { Box, Container, Group, Input, Text, ThemeIcon, validateJson } from '@mantine/core';
+import { Box, Container, Group, Input, MediaQuery, Text, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote, INoteTitleOnly } from '@/data/models/Note';
 import { useForm } from '@mantine/form';
@@ -117,11 +117,12 @@ const Page: React.FC<Props> = (props) => {
                 <Box>
                     <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" mb="xl" styles={() => ({ input: { height: '35px', borderBottom: '1px solid', fontWeight: 'bold' } })} radius="xs" size="xl" />
                 </Box>
-                <Group position='apart'>
-                    <Text c="dimmed">Created {formatDistanceToNow(new mongoose.Types.ObjectId(props.note._id).getTimestamp())} ago</Text>
-                    <Text c="dimmed">Modified {modifiedHuman} ago</Text>
-                </Group>
-
+                <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
+                    <Group position='apart'>
+                        <Text c="dimmed">Created {formatDistanceToNow(new mongoose.Types.ObjectId(props.note._id).getTimestamp())} ago</Text>
+                        <Text c="dimmed">Modified {modifiedHuman} ago</Text>
+                    </Group>
+                </MediaQuery>
                 <TextEditor editor={editor} />
             </Container>
             <Box sx={{ position: 'absolute', bottom: '20px', right: '20px' }}>

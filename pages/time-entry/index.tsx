@@ -132,16 +132,16 @@ const TimeEntryIndex = (props: Props) => {
         <Layout menu={<TimeEntryReport report={dataReport} />}>
             <Container size="md" px="xs">
                 <Grid mt='md'>
-                    <Grid.Col span='auto'>
+                    <Grid.Col sm='auto' span={9}>
                         <TextInput onKeyDown={handleEnter} ref={textinput} {...form.getInputProps('entry')} placeholder="Entry" />
                     </Grid.Col>
-                    <Grid.Col md={1} span={2}>
+                    <Grid.Col sm={1} span={3}>
                         <NumberInput hideControls onKeyDown={handleEnter} {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" />
                     </Grid.Col>
-                    <Grid.Col md={2} span={3}>
+                    <Grid.Col sm={2} span={9}>
                         <DatePicker onKeyDown={handleEnter} clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" />
                     </Grid.Col>
-                    <Grid.Col span={1}>
+                    <Grid.Col sm={1} span={3}>
                         <ActionIcon sx={{ width: '100%', height: '36px' }} variant='gradient' loading={addLoading} onClick={handleAdd}>
                             <IconSquareRoundedPlus size={20} />
                         </ActionIcon>
