@@ -6,10 +6,7 @@ import { Dictionary } from 'lodash';
 
 type Props = {
     handleDeleteEntry: (_id: string) => Promise<void>;
-    data: {
-        entries: Dictionary<ITimeEntry[]>,
-        latestDate: string
-    };
+    data: Dictionary<ITimeEntry[]>;
 }
 
 export const NestedTable = (props: Props) => {
@@ -44,8 +41,8 @@ export const NestedTable = (props: Props) => {
     const { classes } = useStyles();
 
     return (
-        <Accordion variant="separated" radius="md" classNames={classes} defaultValue={props.data.latestDate} className={classes.root}>
-            {Object.keys(props.data.entries).map((idx: string) => (
+        <Accordion variant="separated" radius="md" classNames={classes} defaultValue={format(new Date(), 'yyyy-MM-dd')} className={classes.root}>
+            {Object.keys(props.data).map((idx: string) => (
                 <Accordion.Item key={idx} value={idx}>
                     <Accordion.Control >
                         <strong>{idx}</strong>
@@ -61,7 +58,7 @@ export const NestedTable = (props: Props) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {props.data.entries[idx].map((d: ITimeEntry) => (
+                                {props.data[idx].map((d: ITimeEntry) => (
                                     <tr key={d._id}>
                                         <td>{d.entry}</td>
                                         <td>{d.hours}</td>

@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { ActionIcon, AppShell, Burger, Drawer, Group, Header, MediaQuery, Menu, Title, useMantineTheme } from '@mantine/core';
+import { ActionIcon, AppShell, Burger, CSSObject, Drawer, Group, Header, MediaQuery, Menu, Title, useMantineTheme } from '@mantine/core';
 import { ReactNode, useState } from 'react';
-import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconMenu2, IconNotes, IconSlash } from '@tabler/icons';
+import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import CommandLineDialog from '../commandLine/CommandLineDialog';
 import { useWindowEvent } from '@mantine/hooks';
@@ -121,6 +121,8 @@ const Layout: React.FC<Props> = (props) => {
         setTaskOpened(true);
     };
 
+    const removeHover: CSSObject = { ':hover': { background: 'transparent' } };
+
     return (
         <AppShell
             padding="md"
@@ -132,11 +134,11 @@ const Layout: React.FC<Props> = (props) => {
                             <Title sx={{ color: '#ffffff' }}>notes for .me</Title>
                         </Link>
                         <Group>
-                            <ActionIcon variant='subtle' size='lg' onClick={handleTask}>
+                            <ActionIcon sx={removeHover} variant='subtle' size='lg' onClick={handleTask}>
                                 <IconCheckbox size={24} color='white' stroke={3} />
                             </ActionIcon>
                             <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
-                                <ActionIcon variant='subtle' size='lg' onClick={handleClick}>
+                                <ActionIcon sx={removeHover} variant='subtle' size='lg' onClick={handleClick}>
                                     <IconSlash color='white' size={24} stroke={3} />
                                 </ActionIcon>
                             </MediaQuery>

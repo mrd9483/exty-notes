@@ -3,34 +3,20 @@ import { ITimeEntry } from '@/data/models/TimeEntry';
 import { ActionIcon, Button, Container, Divider, Grid, Group, NumberInput, TextInput } from '@mantine/core';
 import { DatePicker, DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { useEffect, useRef, useState } from 'react';
-import { endOfWeek, format, startOfWeek } from 'date-fns';
+import { endOfWeek, startOfWeek } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconList, IconListDetails, IconSquareRoundedPlus } from '@tabler/icons';
 import { ITimeEntryReport, deleteEntry, entryGroup, entryReport, getEntries, saveEntry } from '@/services/entries';
 import { timeService } from '@/utils/listeners';
 import TimeEntryReport from '@/components/timeEntries/TimeEntryReport';
-import _, { Dictionary } from 'lodash';
+import { Dictionary } from 'lodash';
 import { NestedTable } from '@/components/timeEntries/NestedTable';
 import { CollapsedTable } from '@/components/timeEntries/CollapsedTable';
-import { GetServerSideProps } from 'next';
-import { getServerSession } from 'next-auth';
-import { authOptions } from 'pages/api/auth/[...nextauth]';
 
 type Props = {
     lastDate: string
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getServerSession(context.req, context.res, authOptions);
-    const lastDate = format(new Date((_.last(await getEntries(session?.user.id)) as ITimeEntry).date), 'yyyy-MM-dd');
-
-    return {
-        props: {
-            lastDate
-        }
-    };
-};
 
 const TimeEntryIndex = (props: Props) => {
     console.log(props.lastDate);
@@ -165,7 +151,7 @@ const TimeEntryIndex = (props: Props) => {
                     </Grid.Col>
                 </Grid>
                 {collapsed && <CollapsedTable data={data} handleDeleteEntry={handleDeleteEntry} />}
-                {!collapsed && <NestedTable data={{ latestDate: props.lastDate, entries: data }} handleDeleteEntry={handleDeleteEntry} />}
+                {!collapsed && <NestedTable data={data} handleDeleteEntry={handleDeleteEntry} />}
             </Container>
         </Layout >
     );
