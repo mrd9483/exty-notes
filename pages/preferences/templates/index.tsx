@@ -1,4 +1,4 @@
-import Layout from '@/components/layouts/Layout';
+import { Layout } from '@/components/layouts/Layout';
 import { ActionIcon, Button, Container, Group, Input, List, Modal } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
@@ -7,7 +7,7 @@ import { addTemplate, deleteTemplate, getTemplates } from '@/services/templates'
 import { ITemplate } from '@/data/models/Template';
 import Link from 'next/link';
 
-const TemplateIndex: React.FC = () => {
+const TemplateIndex = () => {
     const [data, setData] = useState<ITemplate[]>([]);
     const [templateToDelete, setTemplateToDelete] = useState<string[]>([]);
     const [addModelOpen, setAddModelOpen] = useState(false);

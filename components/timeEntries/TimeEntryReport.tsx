@@ -6,7 +6,7 @@ type Props = {
     report: ITimeEntryReport[]
 };
 
-const TimeEntryReport: React.FC<Props> = (props) => {
+export const TimeEntryReport = (props: Props) => {
 
     return (
         <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
@@ -32,7 +32,4 @@ const TimeEntryReport: React.FC<Props> = (props) => {
             </Navbar>
         </MediaQuery>
     );
-
 };
-
-export default TimeEntryReport;

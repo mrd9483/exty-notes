@@ -1,5 +1,5 @@
 import { Dialog } from '@mantine/core';
-import CommandLine from './CommandLine';
+import { CommandLine } from './CommandLine';
 
 type Props = {
     onEnter?: (command: string) => void;
@@ -8,11 +8,9 @@ type Props = {
     disabled?: boolean;
 };
 
-const CommandLineDialog: React.FC<Props> = (props) => {
+export const CommandLineDialog = (props: Props) => {
 
     return (<Dialog opened={props.opened} w={700} withCloseButton shadow='xl'>
         <CommandLine disabled={props.disabled} triggerFocus={props.triggerFocus} onEnter={props.onEnter} />
     </Dialog>);
 };
-
-export default CommandLineDialog;

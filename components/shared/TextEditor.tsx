@@ -8,7 +8,7 @@ type Props = {
     editor: Editor | null;
 }
 
-const TextEditor: React.FC<Props> = (props) => {
+export const TextEditor = (props: Props) => {
 
     const editor = props.editor;
 
@@ -79,5 +79,3 @@ const TextEditor: React.FC<Props> = (props) => {
         </RichTextEditor>
     );
 };
-
-export default TextEditor;

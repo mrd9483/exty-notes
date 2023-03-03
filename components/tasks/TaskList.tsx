@@ -5,13 +5,13 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { useSession } from 'next-auth/react';
 import { getTasks, saveTask, setTaskComplete } from '@/services/tasks';
 import { taskService } from '@/utils/listeners';
-import TaskButton from './TaskButton';
+import { TaskButton } from './TaskButton';
 
 type Props = {
     showComplete?: boolean
 }
 
-const TaskList: React.FC<Props> = (props) => {
+export const TaskList = (props: Props) => {
 
     const [data, setData] = useState<ITask[]>([]);
     const [addLoading, setAddLoading] = useState(false);
@@ -103,5 +103,3 @@ const TaskList: React.FC<Props> = (props) => {
         </Container>
     </>);
 };
-
-export default TaskList;

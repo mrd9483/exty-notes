@@ -1,4 +1,4 @@
-import NoteLayout from '@/components/layouts/NoteLayout';
+import { NoteLayout } from '@/components/layouts/NoteLayout';
 import { Box, Container, Group, Input, MediaQuery, Text, ThemeIcon, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { INote, INoteTitleOnly } from '@/data/models/Note';
@@ -14,7 +14,7 @@ import mongoose from 'mongoose';
 
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { useSession } from 'next-auth/react';
-import TextEditor from '@/components/shared/TextEditor';
+import { TextEditor } from '@/components/shared/TextEditor';
 import getEditor from '@/utils/editor';
 import { templateService } from '@/utils/listeners';
 import { getTemplateByShortcut } from '@/services/templates';
@@ -38,7 +38,7 @@ type Props = {
     note: INote;
 }
 
-const Page: React.FC<Props> = (props) => {
+const Page = (props: Props) => {
     const loaded = useRef(false);
     const contentJson = (props.note.note !== '' && validateJson(props.note.note)) ? props.note.note : '[]';
 

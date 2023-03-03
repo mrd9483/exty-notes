@@ -1,16 +1,14 @@
 import { ReactNode } from 'react';
-import Layout from './Layout';
+import { Layout } from './Layout';
 
 type NoteProps = {
     children: ReactNode;
 };
 
-const NoNoteLayout: React.FC<NoteProps> = (props) => {
+export const NoNoteLayout = (props: NoteProps) => {
     return (
         <Layout menu={<></>}>
             {props.children}
         </Layout>
     );
 };
-
-export default NoNoteLayout;

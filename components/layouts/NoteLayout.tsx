@@ -1,6 +1,6 @@
 import { Box, MediaQuery, NavLink, Navbar } from '@mantine/core';
 import { ReactNode } from 'react';
-import Layout from './Layout';
+import { Layout } from './Layout';
 import { INoteTitleOnly } from '@/data/models/Note';
 import _ from 'lodash';
 
@@ -9,7 +9,7 @@ type NoteProps = {
     notes: INoteTitleOnly[];
 };
 
-const NoteLayout: React.FC<NoteProps> = (props) => {
+export const NoteLayout = (props: NoteProps) => {
     return (
         <Layout menu={
             <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
@@ -27,5 +27,3 @@ const NoteLayout: React.FC<NoteProps> = (props) => {
         </Layout>
     );
 };
-
-export default NoteLayout;

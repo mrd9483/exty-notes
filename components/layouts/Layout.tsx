@@ -3,7 +3,7 @@ import { ActionIcon, AppShell, Burger, CSSObject, Drawer, Group, Header, MediaQu
 import { ReactNode, useState } from 'react';
 import { IconCheckbox, IconClockHour8, IconLogin, IconLogout, IconNotes, IconSlash } from '@tabler/icons';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import CommandLineDialog from '../commandLine/CommandLineDialog';
+import { CommandLineDialog } from '../commandLine/CommandLineDialog';
 import { useWindowEvent } from '@mantine/hooks';
 import CLIParser from '@/utils/CLIParser';
 import { addNote } from '@/services/notes';
@@ -13,7 +13,7 @@ import * as chrono from 'chrono-node';
 import { toast } from 'react-toastify';
 import { saveTask } from '@/services/tasks';
 import { taskService, templateService, timeService } from '@/utils/listeners';
-import TaskList from '../tasks/TaskList';
+import { TaskList } from '../tasks/TaskList';
 import Link from 'next/link';
 
 type Props = {
@@ -21,7 +21,7 @@ type Props = {
     menu?: ReactNode;
 };
 
-const Layout: React.FC<Props> = (props) => {
+export const Layout = (props: Props) => {
     const { data: session } = useSession();
     const router = useRouter();
     const theme = useMantineTheme();
@@ -190,5 +190,3 @@ const Layout: React.FC<Props> = (props) => {
         </AppShell>
     );
 };
-
-export default Layout;

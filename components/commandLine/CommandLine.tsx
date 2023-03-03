@@ -8,7 +8,7 @@ type Props = {
     disabled?: boolean;
 };
 
-const CommandLine: React.FC<Props> = (props) => {
+export const CommandLine = (props: Props) => {
     const [value, setValue] = useState('');
     const inputReference = useRef<HTMLInputElement>(null);
 
@@ -22,7 +22,7 @@ const CommandLine: React.FC<Props> = (props) => {
     useEffect(() => {
         if (inputReference.current)
             inputReference.current.focus();
-            
+
     }, [props.triggerFocus]);
 
     return (<TextInput
@@ -37,5 +37,3 @@ const CommandLine: React.FC<Props> = (props) => {
         sx={{ 'input': { fontFamily: 'monospace' } }}
     />);
 };
-
-export default CommandLine;

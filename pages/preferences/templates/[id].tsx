@@ -4,11 +4,11 @@ import { useForm } from '@mantine/form';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import { IconDeviceFloppy } from '@tabler/icons';
-import TextEditor from '@/components/shared/TextEditor';
+import { TextEditor } from '@/components/shared/TextEditor';
 import { getTemplate, updateTemplate } from '@/services/templates';
 import { ITemplate } from '@/data/models/Template';
 import getEditor from '@/utils/editor';
-import NoNoteLayout from '@/components/layouts/NoNoteLayout';
+import { NoNoteLayout } from '@/components/layouts/NoNoteLayout';
 import { useSession } from 'next-auth/react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -26,7 +26,7 @@ type Props = {
     template: ITemplate;
 }
 
-const Page: React.FC<Props> = (props) => {
+const Template = (props: Props) => {
     const loaded = useRef(false);
     const contentJson = (props.template.template !== '' && validateJson(props.template.template)) ? props.template.template : '[]';
     const { data: session } = useSession();
@@ -82,4 +82,4 @@ const Page: React.FC<Props> = (props) => {
     );
 };
 
-export default Page;
+export default Template;

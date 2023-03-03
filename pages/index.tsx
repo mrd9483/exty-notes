@@ -1,8 +1,8 @@
-import CommandLine from '@/components/commandLine/CommandLine';
-import Layout from '@/components/layouts/Layout';
+import { CommandLine } from '@/components/commandLine/CommandLine';
+import { Layout } from '@/components/layouts/Layout';
 import { Container } from '@mantine/core';
 
-const Home: React.FC = () => {
+const Home = () => {
 
     return (
         <Layout menu={<></>}>

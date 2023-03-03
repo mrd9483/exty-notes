@@ -8,8 +8,7 @@ type TaskButtonProps = {
     task: ITask
 }
 
-
-const TaskButton: React.FC<TaskButtonProps> = (props) => {
+export const TaskButton = (props: TaskButtonProps) => {
     const [loading, setLoading] = useState(false);
 
     const handleRowClick = () => {
@@ -25,5 +24,3 @@ const TaskButton: React.FC<TaskButtonProps> = (props) => {
         </ActionIcon>
     );
 };
-
-export default TaskButton;

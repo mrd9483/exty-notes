@@ -1,4 +1,4 @@
-import NoteLayout from '@/components/layouts/NoteLayout';
+import { NoteLayout } from '@/components/layouts/NoteLayout';
 import { ActionIcon, Box, Button, Card, Center, Container, Grid, Group, Modal, Text, validateJson } from '@mantine/core';
 import { GetServerSideProps } from 'next';
 import { IconCopy, IconTrash } from '@tabler/icons';
@@ -37,7 +37,7 @@ type Props = {
     notes: Array<INote>
 }
 
-const Home: React.FC<Props> = (props) => {
+const Home = (props: Props) => {
     const router = useRouter();
 
     const [opened, setOpened] = useState(false);
