@@ -97,7 +97,9 @@ const TimeEntryIndex = (props: Props) => {
                     textinput.current?.focus();
                 }).then();
 
+            const prevDate = form.values.date;
             form.reset();
+            form.setFieldValue('date', prevDate);
         }
     };
 
@@ -125,7 +127,7 @@ const TimeEntryIndex = (props: Props) => {
                         <NumberInput hideControls onKeyDown={handleEnter} {...form.getInputProps('hours')} precision={2} step={0.5} min={0} max={24} placeholder="Hours" />
                     </Grid.Col>
                     <Grid.Col sm={2} span={9}>
-                        <DatePicker onKeyDown={handleEnter} clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" inputFormat="MM/DD/YYYY" />
+                        <DatePicker onKeyDown={handleEnter} clearable={false} {...form.getInputProps('date')} withinPortal placeholder="Pick date" firstDayOfWeek='sunday' inputFormat="MM/DD/YYYY" />
                     </Grid.Col>
                     <Grid.Col sm={1} span={3}>
                         <ActionIcon sx={{ width: '100%', height: '36px' }} variant='gradient' loading={addLoading} onClick={handleAdd}>

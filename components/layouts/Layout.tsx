@@ -182,10 +182,9 @@ export const Layout = (props: Props) => {
                 transitionDuration={250}
                 transitionTimingFunction="ease"
                 position="right"
+                styles={{ drawer: { overflowY: 'scroll' } }}
             >
-                {
-                    <TaskList showComplete={false} />
-                }
+                <TaskList showComplete={false} />
             </Drawer>
         </AppShell>
     );
