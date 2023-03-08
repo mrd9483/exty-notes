@@ -79,7 +79,7 @@ const Page = (props: Props) => {
             saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
                 .then((res) => {
                     setSaveIndicator(false);
-                    setModified(new Date(res.updated));
+                    setModified(new Date(res.data.updated));
                 });
 
         } else {
@@ -96,7 +96,7 @@ const Page = (props: Props) => {
         saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
             .then((res) => {
                 setSaveIndicator(false);
-                setModified(new Date(res.updated));
+                setModified(new Date(res.data.updated));
 
                 getNotesByUserId(session?.user.id as string, true).then(data => {
                     setNotesTitleOnly(data);

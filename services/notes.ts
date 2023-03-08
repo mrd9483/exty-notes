@@ -1,29 +1,17 @@
 import { INote } from '@/data/models/Note';
+import axios from 'axios';
 
 const saveContent = (noteId: string, content: string, title: string) => {
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ note: content, title })
-        })
-        .then(res => res.json());
+    return axios.post(`/notes/${noteId}`, JSON.stringify({ note: content, title }));
 };
 
 const addNote = async (userId: string, title: string, content?: string) => {
-    const note = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes`,
-        {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, title, note: content ?? '' })
-        }).then(res => res.json());
-
-    return note;
+    const note = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/notes`, { user: userId, title, note: content ?? '' });
+    return note.data;
 };
 
 const getNote = async (noteId: string): Promise<INote> => {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${noteId}`)
-        .then(res => res.json());
+    return (await axios.get(`/notes/${noteId}`)).data;
 };
 
 const copyNote = async (id: string) => {
@@ -33,8 +21,7 @@ const copyNote = async (id: string) => {
 
 const getNotesByUserId = async (userId: string, titlesOnly?: boolean) => {
     const titlesOnlyStr = titlesOnly ? '?titlesOnly=true' : '';
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/user/${userId}${titlesOnlyStr}`)
-        .then(res => res.json());
+    return (await axios.get(`/notes/user/${userId}${titlesOnlyStr}`)).data;
 };
 
 export { saveContent, addNote, getNote, copyNote, getNotesByUserId };

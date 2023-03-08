@@ -19,7 +19,7 @@ const getEditor = (content: Content | undefined) => useEditor({
         TableHeader,
         TableRow,
         TaskList,
-        TaskItem
+        TaskItem,
     ],
     content
 });

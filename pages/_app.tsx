@@ -3,9 +3,15 @@ import { MantineProvider } from '@mantine/core';
 import { SessionProvider } from 'next-auth/react';
 import { ToastContainer } from 'react-toastify';
 import NextNProgress from 'nextjs-progressbar';
+import axios from 'axios';
+
+axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.headers.put['Content-Type'] = 'application/json';
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import '../styles/noteStyle.scss';
+
 
 export default function App({ Component, pageProps }: AppProps) {
 

@@ -142,7 +142,7 @@ export const Layout = (props: Props) => {
                                     <IconSlash color='white' size={24} stroke={3} />
                                 </ActionIcon>
                             </MediaQuery>
-                            <Menu shadow="xl" width={200} radius="sm">
+                            <Menu shadow="xl" width={200} radius="sm" onClose={() => setMenuOpen(false)}>
                                 <Menu.Target>
                                     <Burger color='white' opened={menuOpen} onClick={() => setMenuOpen((o) => !o)} title="menu" />
                                 </Menu.Target>
