@@ -13,7 +13,7 @@ const addTemplate = (userId: string, template: string, shortcut: string) => {
         {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, template, shortcut })
+            body: JSON.stringify({ user: userId, template, shortcut }),
         });
 };
 
@@ -22,7 +22,7 @@ const updateTemplate = (id: string, userId: string, template: string, shortcut: 
         {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, template, shortcut })
+            body: JSON.stringify({ user: userId, template, shortcut }),
         });
 };
 

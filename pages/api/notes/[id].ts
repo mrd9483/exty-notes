@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         const obj = await M.updateOne({ _id: id }, {
-            active: false
+            active: false,
         });
 
         res.status(200).json(obj);

@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import ApiError from './errors/ApiError';
 import mongoose, { CallbackError, Document, Error, Model } from 'mongoose';
 import ResourceNotFoundError from './errors/ResourceNotFoundError';
-import axios from 'axios';
 
 export default async function apiGlobal(req: NextApiRequest, res: NextApiResponse, actions: { [key: string]: () => Promise<void> }) {
     try {
@@ -67,4 +66,4 @@ function handleValidationError(err: Error.ValidationError, res: NextApiResponse)
     res.status(422).json({ messages });
 }
 
-export { saveApiGlobal, GetByIdGlobal, globalDelete, handleValidationError, axiosConnection };
+export { saveApiGlobal, GetByIdGlobal, globalDelete, handleValidationError };

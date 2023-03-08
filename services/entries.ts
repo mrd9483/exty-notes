@@ -18,7 +18,7 @@ const saveEntry = (userId: string, date: Date, entry: string, hours: number) => 
         {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, entry, date, hours })
+            body: JSON.stringify({ user: userId, entry, date, hours }),
         });
 };
 

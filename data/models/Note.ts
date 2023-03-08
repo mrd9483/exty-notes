@@ -21,7 +21,7 @@ const noteSchema = new Schema({
     slug: String,
     note: String,
     title: String,
-    active: Boolean
+    active: Boolean,
 });
 
 const Note = models.Note || model<INote>('Note', noteSchema);

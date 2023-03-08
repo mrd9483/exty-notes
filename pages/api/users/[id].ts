@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
-            active: req.body.active
+            active: req.body.active,
         });
 
         res.status(200).json(obj);

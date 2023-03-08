@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const obj = await M.updateOne({ _id: id }, {
             updated: Date.now(),
             shortcut: req.body.shortcut,
-            template: req.body.template
+            template: req.body.template,
         });
 
         res.status(200).json(obj);

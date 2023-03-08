@@ -87,19 +87,19 @@ export const Layout = (props: Props) => {
                         { optional: false, description: 'hours' },
                         { optional: false, description: 'task' },
                         { optional: true, description: 'when' },
-                    ]
+                    ],
                 },
                 'task': { arguments: [{ optional: false, description: 'entry' }] },
                 't': { arguments: [{ optional: false, description: 'shortcut' }] },
-                'fart': {}
+                'fart': {},
             },
                 {
                     'note': (...args: string[]) => { addNoteOnEnter(args.join(' ')); },
                     'time': (...args: string[]) => { addTimeOnEnter(args[0], args[1], args[2]); },
                     'task': (...args: string[]) => { addTaskOnEnter(args.join(' ')); },
                     't': (...args: string[]) => { addTemplateOnEnter(args[0]); },
-                    'fart': () => { toast.info('💩💩💩'); setCommandDisabled(false); }
-                }
+                    'fart': () => { toast.info('💩💩💩'); setCommandDisabled(false); },
+                },
             );
             try {
                 p.parse(command);

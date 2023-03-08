@@ -44,8 +44,8 @@ const TimeEntryIndex = (props: Props) => {
         validate: {
             date: isNotEmpty(),
             hours: isInRange({ min: 0.5, max: 24 }),
-            entry: isNotEmpty()
-        }
+            entry: isNotEmpty(),
+        },
     });
 
     const handleLastWeekButton = async () => {
@@ -53,7 +53,7 @@ const TimeEntryIndex = (props: Props) => {
         const end = endOfWeek(new Date());
         setDatePicker([
             start,
-            end
+            end,
         ]);
 
         getEntriesUI(start, end);

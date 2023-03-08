@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             entry: req.body.entry,
             date: req.body.date,
             user: req.body.user,
-            hours: req.body.hours
+            hours: req.body.hours,
         });
 
         res.status(200).json(obj);

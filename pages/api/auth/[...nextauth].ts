@@ -42,7 +42,7 @@ const authOptions: NextAuthOptions = {
             }
             return token;
         },
-    }
+    },
 };
 
 export { authOptions };

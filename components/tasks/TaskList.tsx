@@ -22,11 +22,11 @@ export const TaskList = (props: Props) => {
     const form = useForm({
         validateInputOnBlur: true,
         initialValues: {
-            task: ''
+            task: '',
         },
         validate: {
-            task: isNotEmpty()
-        }
+            task: isNotEmpty(),
+        },
     });
 
     taskService.getData().subscribe((id) => {

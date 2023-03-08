@@ -1,4 +1,4 @@
-import { Remarkable, ItemResponse } from 'remarkable-typescript';
+import { ItemResponse, Remarkable } from 'remarkable-typescript';
 
 export default class RemarkableClient {
 

@@ -21,7 +21,7 @@ const getEditor = (content: Content | undefined) => useEditor({
         TaskList,
         TaskItem,
     ],
-    content
+    content,
 });
 
 export default getEditor;

@@ -5,7 +5,7 @@ const saveTask = async (userId: string, task: string, dateCompleted?: Date) => {
         {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, task, dateCompleted })
+            body: JSON.stringify({ user: userId, task, dateCompleted }),
         });
 
     return await res.json();

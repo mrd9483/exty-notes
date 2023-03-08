@@ -15,7 +15,7 @@ const timeEntrySchema = new Schema({
     entry: { type: String, required: true },
     date: Date,
     category: String,
-    hours: { type: Number, min: 0, max: 24, required: true }
+    hours: { type: Number, min: 0, max: 24, required: true },
 });
 
 const TimeEntry = models.TimeEntry || model<ITimeEntry>('TimeEntry', timeEntrySchema);

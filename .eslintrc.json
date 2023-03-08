@@ -39,6 +39,7 @@
         "eol-last": "warn",
         "no-var": "error",
         "eqeqeq": "error",
+        "comma-dangle": ["error", "always-multiline"],
         "react/prop-types": "off",
         "sort-imports": [
             "error",

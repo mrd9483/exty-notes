@@ -28,8 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
         props: {
             notesTitleOnly: await getNotesByUserId(session?.user.id as string, true),
-            note: await getNote(id as string)
-        }
+            note: await getNote(id as string),
+        },
     };
 };
 
@@ -44,7 +44,7 @@ const Page = (props: Props) => {
 
     const content = {
         type: 'doc',
-        content: JSON.parse(contentJson)
+        content: JSON.parse(contentJson),
     };
 
     const editor = getEditor(content);
@@ -52,13 +52,13 @@ const Page = (props: Props) => {
     const form = useForm({
         initialValues: {
             title: props.note.title,
-            note: props.note.note
-        }
+            note: props.note.note,
+        },
     });
 
     templateService.getData().subscribe({
         next: (shortcut) => getTemplateByShortcut(session?.user.id as string, shortcut as string)
-            .then(res => editor?.chain().focus().insertContent(res.template))
+            .then(res => editor?.chain().focus().insertContent(res.template)),
     });
 
     const noteId = props.note._id;

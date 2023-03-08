@@ -6,7 +6,7 @@ const userSchema = new Schema({
     email: String,
     active: Boolean,
     updated: { type: Date, default: Date.now },
-    darkMode: Boolean
+    darkMode: Boolean,
 });
 
 const User = models.User || model('User', userSchema);

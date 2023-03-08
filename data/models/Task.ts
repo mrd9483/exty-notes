@@ -18,7 +18,7 @@ const taskSchema = new Schema({
     task: String,
     isComplete: { type: Boolean, default: false },
     dateCompleted: Date,
-    dateScheduled: Date
+    dateScheduled: Date,
 });
 
 const Task = models.Task || model<ITask>('Task', taskSchema);

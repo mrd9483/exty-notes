@@ -17,8 +17,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     return {
         props: {
-            template: await getTemplate(id as string)
-        }
+            template: await getTemplate(id as string),
+        },
     };
 };
 
@@ -33,7 +33,7 @@ const Template = (props: Props) => {
 
     const content = {
         type: 'doc',
-        content: JSON.parse(contentJson)
+        content: JSON.parse(contentJson),
     };
 
     const editor = getEditor(content);
@@ -41,8 +41,8 @@ const Template = (props: Props) => {
     const form = useForm({
         initialValues: {
             shortcut: props.template.shortcut,
-            template: props.template.template
-        }
+            template: props.template.template,
+        },
     });
 
     const templateId = props.template._id;

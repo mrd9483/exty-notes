@@ -28,8 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
         props:
         {
-            notes: await getNotesByUserId(session?.user.id as string)
-        }
+            notes: await getNotesByUserId(session?.user.id as string),
+        },
     };
 };
 
@@ -82,7 +82,7 @@ const Home = (props: Props) => {
                 <Grid>
                     {props.notes.map(n => (
                         <Grid.Col sx={{
-                            cursor: 'pointer'
+                            cursor: 'pointer',
                         }} onClick={() => handleNavigation(n._id)} key={n._id} sm={6} md={4} span={12}>
                             <Card withBorder shadow="sm" radius="md">
                                 <Card.Section withBorder inheritPadding py="xs">
