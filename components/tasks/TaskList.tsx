@@ -35,7 +35,6 @@ export const TaskList = (props: Props) => {
 
     useEffect(() => {
         const runEffect = async () => {
-            console.log(status);
             if (status === 'authenticated') {
                 setData(await getTasks(session?.user.id, props.showComplete));
             }

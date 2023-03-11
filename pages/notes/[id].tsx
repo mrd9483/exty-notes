@@ -9,9 +9,7 @@ import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
 import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
 import { IconDeviceFloppy } from '@tabler/icons';
-
 import mongoose from 'mongoose';
-
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { useSession } from 'next-auth/react';
 import { TextEditor } from '@/components/shared/TextEditor';

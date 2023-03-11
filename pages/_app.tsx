@@ -11,15 +11,17 @@ axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 import 'react-toastify/dist/ReactToastify.min.css';
 import '../styles/noteStyle.scss';
+import { useRouter } from 'next/router';
 
 
 export default function App({ Component, pageProps }: AppProps) {
-
+    const router = useRouter();
+    
     return (
         <MantineProvider withGlobalStyles withNormalizeCSS>
             <SessionProvider session={pageProps.session}>
                 <NextNProgress height={7} showOnShallow />
-                <Component {...pageProps} />
+                <Component {...pageProps} key={router.asPath} />
                 <ToastContainer position="top-center" theme="colored" />
             </SessionProvider>
         </MantineProvider>
