@@ -1,4 +1,4 @@
-import { Button, Container, Grid, Table, Text, TextInput } from '@mantine/core';
+import { Button, Center, Container, Grid, Loader, LoadingOverlay, Table, Text, TextInput } from '@mantine/core';
 import { ITask } from '@/data/models/Task';
 import { useEffect, useState } from 'react';
 import { isNotEmpty, useForm } from '@mantine/form';
@@ -16,6 +16,7 @@ export const TaskList = (props: Props) => {
     const [data, setData] = useState<ITask[]>([]);
     const [addLoading, setAddLoading] = useState(false);
     const [dataAdded, setDataAdded] = useState('');
+    const [taskLoading, setTaskLoading] = useState(false);
 
     const { data: session, status } = useSession();
 
@@ -36,7 +37,9 @@ export const TaskList = (props: Props) => {
     useEffect(() => {
         const runEffect = async () => {
             if (status === 'authenticated') {
+                setTaskLoading(true);
                 setData(await getTasks(session?.user.id, props.showComplete));
+                setTaskLoading(false);
             }
         };
 
@@ -70,6 +73,9 @@ export const TaskList = (props: Props) => {
     };
 
     return (<>
+        {taskLoading &&
+            <Center><Loader size="xl" /></Center>
+        }
         <Table>
             <thead>
                 <tr>
