@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const completeClean = returnComplete ?? false;
 
     const GET = async () => {
-        const obj = await M.find({ user: id, isComplete: completeClean }).exec();
+        const obj = await M.find({ user: id, isComplete: completeClean }).populate('taskType').exec();
         res.status(200).json(obj);
     };
 

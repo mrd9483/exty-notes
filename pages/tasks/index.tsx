@@ -1,10 +1,30 @@
 import { NoNoteLayout } from '@/components/layouts/NoNoteLayout';
-import { TaskList } from '@/components/tasks/TaskList';
+import { TaskList_v2 } from '@/components/tasks/TaskList_v2';
 import { Container, Tabs } from '@mantine/core';
 import { IconCheckbox, IconSquare } from '@tabler/icons';
+import { GetServerSideProps } from 'next';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
+import { authOptions } from 'pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
+import { getUser } from '@/services/users';
+import { IUser } from '@/data/models/User';
 
-const Task = () => {
+type Props = {
+    currentUser: IUser
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    const session = await getServerSession(context.req, context.res, authOptions);
+
+    return {
+        props: {
+            currentUser: await getUser(session?.user.id as string),
+        },
+    };
+};
+
+const Task = (props: Props) => {
     const [tab, setTab] = useState('');
 
     const handleTabChange = (tabUX: string) => {
@@ -24,7 +44,7 @@ const Task = () => {
                         </Tabs.Tab>
                     </Tabs.List>
                 </Tabs>
-                <TaskList showComplete={tab === 'complete'} />
+                <TaskList_v2 categories={props.currentUser?.options?.taskTypes ?? []} showComplete={tab === 'complete'} />
             </Container>
         </NoNoteLayout>
     );

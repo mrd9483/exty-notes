@@ -22,13 +22,13 @@ export default async function apiGlobal(req: NextApiRequest, res: NextApiRespons
     }
 }
 
-function GetByIdGlobal<T>(model: Model<T>, res: NextApiResponse, id: string) {
+function GetByIdGlobal<T>(model: Model<T>, res: NextApiResponse, id: string, ...populate: string[]) {
     return async () => {
         if (!mongoose.isObjectIdOrHexString(id)) {
             throw new ApiError('Id is not fomatted correctly', 400);
         }
 
-        const obj = await model.findOne({ _id: id });
+        const obj = await model.findOne({ _id: id }).populate(populate);
 
         if (obj !== null) {
             res.status(200).json(obj);

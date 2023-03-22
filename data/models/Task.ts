@@ -8,7 +8,8 @@ interface ITask {
     task: string,
     isComplete: boolean,
     dateCompleted: Date,
-    dateScheduled: Date
+    dateScheduled: Date,
+    taskType: string,
 }
 
 const taskSchema = new Schema({
@@ -19,6 +20,7 @@ const taskSchema = new Schema({
     isComplete: { type: Boolean, default: false },
     dateCompleted: Date,
     dateScheduled: Date,
+    taskType: String,
 });
 
 const Task = models.Task || model<ITask>('Task', taskSchema);

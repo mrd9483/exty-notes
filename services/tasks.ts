@@ -1,11 +1,11 @@
 const URL = `${process.env.NEXT_PUBLIC_API_URL}/tasks`;
 
-const saveTask = async (userId: string, task: string, dateCompleted?: Date) => {
+const saveTask = async (userId: string, task: string, taskType?: string, dateCompleted?: Date) => {
     const res = await fetch(URL,
         {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, task, dateCompleted }),
+            body: JSON.stringify({ user: userId, task, dateCompleted, taskType }),
         });
 
     return await res.json();

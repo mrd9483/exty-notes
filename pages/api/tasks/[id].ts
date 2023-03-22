@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { id } = req.query;
 
-    const GET = GetByIdGlobal<typeof M>(M, res, id as string);
+    const GET = GetByIdGlobal<typeof M>(M, res, id as string, 'taskType');
 
     const POST = async () => {
         if (!mongoose.isObjectIdOrHexString(id)) {
