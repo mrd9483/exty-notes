@@ -61,11 +61,10 @@ export const Layout = (props: Props) => {
         const whenDate = chrono.parseDate(when) ?? new Date();
         const hoursNumber = parseFloat(hours);
 
-        const response = await saveEntry(session?.user.id as string, whenDate, task.replace('"', ''), hoursNumber);
-        if (response.status === 200) {
-            const obj = await response.json();
+        const entry = await saveEntry(session?.user.id as string, whenDate, task.replace('"', ''), hoursNumber);
+        if (entry) {
             toast.success('Time Saved');
-            timeService.setData(obj._id);
+            timeService.setData(entry._id);
         } else {
             throw new Error('Time entry incorrect');
         }

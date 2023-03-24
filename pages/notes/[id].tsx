@@ -17,7 +17,6 @@ import getEditor from '@/utils/editor';
 import { templateService } from '@/utils/listeners';
 import { getTemplateByShortcut } from '@/services/templates';
 
-
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
 
@@ -77,7 +76,7 @@ const Page = (props: Props) => {
             saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
                 .then((res) => {
                     setSaveIndicator(false);
-                    setModified(new Date(res.data.updated));
+                    setModified(new Date(res.updated));
                 });
 
         } else {
@@ -94,7 +93,7 @@ const Page = (props: Props) => {
         saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
             .then((res) => {
                 setSaveIndicator(false);
-                setModified(new Date(res.data.updated));
+                setModified(new Date(res.updated));
 
                 getNotesByUserId(session?.user.id as string, true).then(data => {
                     setNotesTitleOnly(data);

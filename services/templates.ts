@@ -1,38 +1,28 @@
-const getTemplates = async (userId: string) => {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/templates/user/${userId}`)
-        .then(res => res.json());
+import { ITemplate } from '@/data/models/Template';
+import axios from 'axios';
+
+const getTemplates = async (userId: string): Promise<ITemplate[]> => {
+    return (await axios.get<ITemplate[]>(`/templates/user/${userId}`)).data;
 };
 
-const getTemplateByShortcut = async (userId: string, shortcut: string) => {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/templates/user/${userId}/${shortcut}`)
-        .then(res => res.json());
+const getTemplateByShortcut = async (userId: string, shortcut: string): Promise<ITemplate> => {
+    return (await axios.get<ITemplate>(`/templates/user/${userId}/${shortcut}`)).data;
 };
 
-const addTemplate = (userId: string, template: string, shortcut: string) => {
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/templates/`,
-        {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, template, shortcut }),
-        });
+const addTemplate = async (userId: string, template: string, shortcut: string): Promise<ITemplate> => {
+    return (await axios.put<ITemplate>('/templates/', { user: userId, template, shortcut })).data;
 };
 
-const updateTemplate = (id: string, userId: string, template: string, shortcut: string) => {
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/templates/${id}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, template, shortcut }),
-        });
+const updateTemplate = async (id: string, userId: string, template: string, shortcut: string): Promise<ITemplate> => {
+    return (await axios.post<ITemplate>(`/templates/${id}`, { user: userId, template, shortcut })).data;
 };
 
 const deleteTemplate = async (entryId: string) => {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/templates/${entryId}`, { method: 'DELETE' });
+    return await axios.delete(`/templates/${entryId}`);
 };
 
 const getTemplate = async (id: string) => {
-    return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/templates/${id}`)
-        .then(res => res.json());
+    return (await axios.get(`/templates/${id}`)).data;
 };
 
 export { getTemplates, updateTemplate, deleteTemplate, getTemplateByShortcut, getTemplate, addTemplate };

@@ -1,27 +1,16 @@
-const URL = `${process.env.NEXT_PUBLIC_API_URL}/tasks`;
+import { ITask } from '@/data/models/Task';
+import axios from 'axios';
 
-const saveTask = async (userId: string, task: string, taskType?: string, dateCompleted?: Date) => {
-    const res = await fetch(URL,
-        {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: userId, task, dateCompleted, taskType }),
-        });
-
-    return await res.json();
+const saveTask = async (userId: string, task: string, taskType?: string, dateCompleted?: Date): Promise<ITask> => {
+    return (await axios.put<ITask>('/tasks', { user: userId, task, dateCompleted, taskType })).data;
 };
 
-const getTasks = async (userId?: string, returnComplete?: boolean) => {
-
-    return await fetch(`${URL}/user/${userId}?returnComplete=${returnComplete}`)
-        .then(res => res.json());
+const getTasks = async (userId?: string, returnComplete?: boolean): Promise<ITask[]> => {
+    return (await axios.get<ITask[]>(`$/tasks/user/${userId}?returnComplete=${returnComplete}`)).data;
 };
 
-const setTaskComplete = async (taskId: string) => {
-    const res = await fetch(`${URL}/${taskId}?setComplete=true`,
-        { method: 'POST' }).then((obj) => obj.json());
-
-    return res;
+const setTaskComplete = async (taskId: string): Promise<ITask> => {
+    return (await axios.post<ITask>(`/tasks/${taskId}?setComplete=true`)).data;
 };
 
 export { saveTask, getTasks, setTaskComplete };
