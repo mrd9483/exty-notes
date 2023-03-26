@@ -43,7 +43,7 @@ const TemplateIndex = () => {
     };
 
     const handleDeleteModal = async (template: ITemplate) => {
-        setTemplateToDelete([template._id, template.shortcut]);
+        setTemplateToDelete([template._id as string, template.shortcut]);
     };
 
     const handleDeleteTemplate = async () => {

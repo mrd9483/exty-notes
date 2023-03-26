@@ -1,13 +1,9 @@
 import { Schema, model, models } from 'mongoose';
-
-interface INote {
-    _id: string,
-    user: string,
-    updated: Date,
-    slug: string,
-    note: string,
+import { IUserBase } from './Base';
+interface INote extends IUserBase {
+    note?: string,
     title: string,
-    active: boolean
+    active?: boolean
 }
 
 interface INoteTitleOnly {
@@ -18,10 +14,9 @@ interface INoteTitleOnly {
 const noteSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User', require: true },
     updated: { type: Date, default: Date.now },
-    slug: String,
-    note: String,
+    note: { type: String, default: '', require: false },
     title: String,
-    active: Boolean,
+    active: { type: Boolean, default: true },
 });
 
 const Note = models.Note || model<INote>('Note', noteSchema);

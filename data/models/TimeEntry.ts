@@ -1,9 +1,7 @@
 import { Schema, model, models } from 'mongoose';
+import { IUserBase } from './Base';
 
-interface ITimeEntry {
-    _id: string,
-    user: string,
-    updated: Date,
+interface ITimeEntry extends IUserBase {
     entry: string,
     date: Date,
     hours: number

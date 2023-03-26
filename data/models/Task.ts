@@ -1,14 +1,12 @@
 import { Schema, model, models } from 'mongoose';
+import { IUserBase } from './Base';
 
-interface ITask {
-    _id: string,
-    user: string,
-    updated: Date,
-    note: string,
+interface ITask extends IUserBase {
+    note?: string,
     task: string,
-    isComplete: boolean,
-    dateCompleted: Date,
-    dateScheduled: Date,
+    isComplete?: boolean,
+    dateCompleted?: Date,
+    dateScheduled?: Date,
     taskType: string,
 }
 

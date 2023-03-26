@@ -7,7 +7,7 @@ import { endOfWeek, startOfWeek } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import { isInRange, isNotEmpty, useForm } from '@mantine/form';
 import { IconList, IconListDetails, IconSquareRoundedPlus } from '@tabler/icons';
-import { ITimeEntryReport, deleteEntry, entryGroup, entryReport, getEntries, saveEntry } from '@/services/entries';
+import EntryService, { ITimeEntryReport } from '@/services/EntryService';
 import { timeService } from '@/utils/listeners';
 import { TimeEntryReport } from '@/components/timeEntries/TimeEntryReport';
 import { Dictionary } from 'lodash';
@@ -30,6 +30,7 @@ const TimeEntryIndex = (props: Props) => {
 
     const textinput = useRef<HTMLInputElement>(null);
     const { data: session, status } = useSession();
+    const entryService = new EntryService();
 
     timeService.getData().subscribe((id) => {
         setDataAdded(id as string);
@@ -67,10 +68,10 @@ const TimeEntryIndex = (props: Props) => {
     };
 
     const getEntriesUI = (...params: (Date | null | undefined)[]) => {
-        getEntries(session?.user.id, params?.[0], params?.[1])
+        entryService.getEntries(session?.user.id as string, params?.[0], params?.[1])
             .then((d) => {
-                setData(entryGroup(d));
-                setDataReport(entryReport(d));
+                setData(EntryService.entryGroup(d));
+                setDataReport(EntryService.entryReport(d));
             });
     };
 
@@ -90,7 +91,12 @@ const TimeEntryIndex = (props: Props) => {
 
             setAddLoading(true);
 
-            await saveEntry(session?.user.id as string, form.values.date, form.values.entry, form.values.hours)
+            await entryService.create({
+                user: session?.user.id as string,
+                date: form.values.date,
+                entry: form.values.entry,
+                hours: form.values.hours,
+            })
                 .then(() => {
                     getEntriesUI(datePicker?.[0], datePicker?.[1]);
                     setAddLoading(false);
@@ -112,7 +118,7 @@ const TimeEntryIndex = (props: Props) => {
     };
 
     const handleDeleteEntry = async (_id: string) => {
-        deleteEntry(_id)
+        entryService.delete(_id)
             .then(() => getEntriesUI(datePicker?.[0], datePicker?.[1]));
     };
 

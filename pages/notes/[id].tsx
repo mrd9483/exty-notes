@@ -7,7 +7,6 @@ import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
 import { useDebounce } from 'use-debounce';
 import { useEffect, useRef, useState } from 'react';
-import { getNote, getNotesByUserId, saveContent } from '../../services/notes';
 import { IconDeviceFloppy } from '@tabler/icons';
 import mongoose from 'mongoose';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
@@ -16,16 +15,19 @@ import { TextEditor } from '@/components/shared/TextEditor';
 import getEditor from '@/utils/editor';
 import { templateService } from '@/utils/listeners';
 import { getTemplateByShortcut } from '@/services/templates';
+import NoteService from '@/services/NoteService';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
+    const noteService = new NoteService();
 
     const { id } = context.query;
 
     return {
         props: {
-            notesTitleOnly: await getNotesByUserId(session?.user.id as string, true),
-            note: await getNote(id as string),
+            notesTitleOnly: await noteService.queryByUserId(session?.user.id as string, { titlesOnly: true }),
+            note: await noteService.readOne(id as string),
+            userId: session?.user.id as string,
         },
     };
 };
@@ -33,11 +35,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 type Props = {
     notesTitleOnly: INoteTitleOnly[];
     note: INote;
+    userId: string;
 }
 
 const Page = (props: Props) => {
     const loaded = useRef(false);
-    const contentJson = (props.note.note !== '' && validateJson(props.note.note)) ? props.note.note : '[]';
+    const noteService = new NoteService();
+
+    const contentJson = (props.note.note && validateJson(props.note.note)) ? props.note.note : '[]';
 
     const content = {
         type: 'doc',
@@ -58,7 +63,7 @@ const Page = (props: Props) => {
             .then(res => editor?.chain().focus().insertContent(res.template)),
     });
 
-    const noteId = props.note._id;
+    const noteId = props.note._id as string;
     const [debouncedEditor] = useDebounce(editor?.state.doc.content, 2000, { maxWait: 15000 });
     const [debouncedTitle] = useDebounce(form?.values.title, 2000, { maxWait: 15000 });
     const [saveIndicator, setSaveIndicator] = useState(false);
@@ -73,10 +78,10 @@ const Page = (props: Props) => {
 
         if (loaded.current) {
             setSaveIndicator(true);
-            saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
+            noteService.update({ _id: noteId, user: props.userId, title: form.values.title, note: JSON.stringify(debouncedEditor.toJSON()) })
                 .then((res) => {
                     setSaveIndicator(false);
-                    setModified(new Date(res.updated));
+                    setModified(new Date(res.updated as Date));
                 });
 
         } else {
@@ -90,14 +95,15 @@ const Page = (props: Props) => {
             return;
 
         setSaveIndicator(true);
-        saveContent(noteId, JSON.stringify(debouncedEditor.toJSON()), form.values.title)
+        noteService.update({ _id: noteId, user: props.userId, title: form.values.title, note: JSON.stringify(debouncedEditor.toJSON()) })
             .then((res) => {
                 setSaveIndicator(false);
-                setModified(new Date(res.updated));
+                setModified(new Date(res.updated as Date));
 
-                getNotesByUserId(session?.user.id as string, true).then(data => {
-                    setNotesTitleOnly(data);
-                });
+                noteService.queryByUserId(props.userId, { titlesOnly: true })
+                    .then(data => {
+                        setNotesTitleOnly(data as INoteTitleOnly[]);
+                    });
             });
     }, [debouncedTitle]);
 

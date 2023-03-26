@@ -1,9 +1,7 @@
 import { Schema, model, models } from 'mongoose';
+import { IUserBase } from './Base';
 
-interface ITemplate {
-    _id: string,
-    user: string,
-    updated: Date,
+interface ITemplate extends IUserBase {
     shortcut: string,
     template: string
 }

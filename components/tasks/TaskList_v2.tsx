@@ -3,9 +3,9 @@ import { ITask } from '@/data/models/Task';
 import { useEffect, useState } from 'react';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useSession } from 'next-auth/react';
-import { getTasks, saveTask, setTaskComplete } from '@/services/tasks';
 import { taskService } from '@/utils/listeners';
 import { TaskButton } from './TaskButton';
+import TaskService from '@/services/TaskService';
 
 type Props = {
     showComplete?: boolean,
@@ -18,6 +18,8 @@ export const TaskList_v2 = (props: Props) => {
     const [addLoading, setAddLoading] = useState(false);
     const [dataAdded, setDataAdded] = useState('');
     const [taskLoading, setTaskLoading] = useState(false);
+
+    const taskSvc = new TaskService();
 
     const { data: session, status } = useSession();
 
@@ -40,7 +42,7 @@ export const TaskList_v2 = (props: Props) => {
         const runEffect = async () => {
             if (status === 'authenticated') {
                 setTaskLoading(true);
-                setData(await getTasks(session?.user.id, props.showComplete));
+                setData(await taskSvc.queryByUserId(session?.user.id as string, { showComplete: props.showComplete }));
                 setTaskLoading(false);
             }
         };
@@ -52,8 +54,8 @@ export const TaskList_v2 = (props: Props) => {
         if (!form.validate().hasErrors) {
             setAddLoading(true);
 
-            await saveTask(session?.user.id as string, form.values.task, form.values.taskType)
-                .then(() => getTasks(session?.user.id, props.showComplete)
+            await taskSvc.create({ user: session?.user.id as string, task: form.values.task, taskType: form.values.taskType })
+                .then(() => taskSvc.queryByUserId(session?.user.id as string, { showComplete: props.showComplete })
                     .then((d) => {
                         setData(d);
                         setAddLoading(false);
@@ -64,8 +66,8 @@ export const TaskList_v2 = (props: Props) => {
     };
 
     const handleRowClick = async (id: string) => {
-        await setTaskComplete(id);
-        setData(await getTasks(session?.user.id, props.showComplete));
+        await taskSvc.setComplete(id);
+        setData(await taskSvc.queryByUserId(session?.user.id as string, { showComplete: props.showComplete }));
     };
 
     const handleEnter = async (event: { key: string; }) => {

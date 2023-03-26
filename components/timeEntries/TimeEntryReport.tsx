@@ -1,4 +1,4 @@
-import { ITimeEntryReport } from '@/services/entries';
+import { ITimeEntryReport } from '@/services/EntryService';
 import { Box, MediaQuery, Navbar, Table } from '@mantine/core';
 import _ from 'lodash';
 

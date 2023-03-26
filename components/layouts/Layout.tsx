@@ -6,15 +6,16 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { CommandLineDialog } from '../commandLine/CommandLineDialog';
 import { useWindowEvent } from '@mantine/hooks';
 import CLIParser from '@/utils/CLIParser';
-import { addNote } from '@/services/notes';
 import { useRouter } from 'next/router';
-import { saveEntry } from '@/services/entries';
 import * as chrono from 'chrono-node';
 import { toast } from 'react-toastify';
-import { saveTask } from '@/services/tasks';
 import { taskService, templateService, timeService } from '@/utils/listeners';
-import { TaskList } from '../tasks/TaskList';
+import { TaskList_v2 } from '../tasks/TaskList_v2';
 import Link from 'next/link';
+
+import TaskService from '@/services/TaskService';
+import EntryService from '@/services/EntryService';
+import NoteService from '@/services/NoteService';
 
 type Props = {
     children: ReactNode;
@@ -25,6 +26,10 @@ export const Layout = (props: Props) => {
     const { data: session } = useSession();
     const router = useRouter();
     const theme = useMantineTheme();
+
+    const tasksService = new TaskService();
+    const entryService = new EntryService();
+    const noteService = new NoteService();
 
     const [commandOpened, setCommandOpened] = useState(false);
     const [triggerFocus, setTriggerFocus] = useState(false);
@@ -40,16 +45,16 @@ export const Layout = (props: Props) => {
     });
 
     const addNoteOnEnter = async (title: string) => {
-        const resAddNote = await addNote(session?.user.id as string, title);
+        const resAddNote = await noteService.create({ user: session?.user.id as string, title });
         const path = { pathname: '/notes/[id]', query: { id: resAddNote._id } };
         router.push(path).then(() => router.reload());
     };
 
     const addTaskOnEnter = async (task: string) => {
         try {
-            const obj = await saveTask(session?.user.id as string, task);
+            const obj = await tasksService.create({ user: session?.user.id as string, task, taskType: '' });
             toast.success('Task Saved');
-            taskService.setData(obj._id);
+            taskService.setData(obj._id as string);
         } catch {
             toast.error('Task save failed');
         }
@@ -61,10 +66,17 @@ export const Layout = (props: Props) => {
         const whenDate = chrono.parseDate(when) ?? new Date();
         const hoursNumber = parseFloat(hours);
 
-        const entry = await saveEntry(session?.user.id as string, whenDate, task.replace('"', ''), hoursNumber);
+
+        const entry = await entryService.create(
+            {
+                user: session?.user.id as string,
+                date: whenDate,
+                entry: task.replace('"', ''),
+                hours: hoursNumber,
+            });
         if (entry) {
             toast.success('Time Saved');
-            timeService.setData(entry._id);
+            timeService.setData(entry._id as string);
         } else {
             throw new Error('Time entry incorrect');
         }
@@ -183,7 +195,7 @@ export const Layout = (props: Props) => {
                 position="right"
                 styles={{ drawer: { overflowY: 'scroll' } }}
             >
-                <TaskList showComplete={false} />
+                <TaskList_v2 categories={[]} showComplete={false} />
             </Drawer>
         </AppShell>
     );

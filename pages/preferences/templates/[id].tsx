@@ -57,7 +57,7 @@ const Template = (props: Props) => {
 
         if (loaded.current) {
             setSaveIndicator(true);
-            updateTemplate(templateId, session?.user.id as string, JSON.stringify(debouncedEditor.toJSON()), form.values.shortcut)
+            updateTemplate(templateId as string, session?.user.id as string, JSON.stringify(debouncedEditor.toJSON()), form.values.shortcut)
                 .then(() => { setSaveIndicator(false); });
         } else {
             loaded.current = true;

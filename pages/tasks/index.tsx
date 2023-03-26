@@ -3,7 +3,6 @@ import { TaskList_v2 } from '@/components/tasks/TaskList_v2';
 import { Container, Tabs } from '@mantine/core';
 import { IconCheckbox, IconSquare } from '@tabler/icons';
 import { GetServerSideProps } from 'next';
-import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';

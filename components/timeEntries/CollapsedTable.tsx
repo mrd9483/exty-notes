@@ -29,7 +29,7 @@ export const CollapsedTable = (props: Props) => {
                             <td>{d.hours}</td>
                             <td>{format(new Date(d.date), 'MM/dd/yyyy')}</td>
                             <td>
-                                <ActionIcon size="md" variant='subtle' onClick={() => props.handleDeleteEntry(d._id)}>
+                                <ActionIcon size="md" variant='subtle' onClick={() => props.handleDeleteEntry(d._id as string)}>
                                     <IconTrash size={14} />
                                 </ActionIcon>
                             </td>

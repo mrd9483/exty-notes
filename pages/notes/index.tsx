@@ -3,7 +3,7 @@ import { ActionIcon, Box, Button, Card, Center, Container, Grid, Group, Modal, T
 import { GetServerSideProps } from 'next';
 import { IconCopy, IconTrash } from '@tabler/icons';
 import { MouseEvent, useState } from 'react';
-import { INote } from '@/data/models/Note';
+import { INote, INoteTitleOnly } from '@/data/models/Note';
 import { useRouter } from 'next/router';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
@@ -18,17 +18,18 @@ import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
-import { copyNote, getNotesByUserId } from '@/services/notes';
 
 import _ from 'lodash';
+import NoteService from '@/services/NoteService';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
+    const noteService = new NoteService();
 
     return {
         props:
         {
-            notes: await getNotesByUserId(session?.user.id as string),
+            notes: await noteService.queryByUserId(session?.user.id as string),
         },
     };
 };
@@ -38,18 +39,19 @@ type Props = {
 }
 
 const Home = (props: Props) => {
+    const noteService = new NoteService();
     const router = useRouter();
 
     const [opened, setOpened] = useState(false);
     const [idToDelete, setIdToDelete] = useState('');
 
-    const handleDeleteModal = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, id: string) => {
+    const handleDeleteModal = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, id?: string) => {
         setOpened(true);
-        setIdToDelete(id);
+        setIdToDelete(id as string);
         e.stopPropagation();
     };
 
-    const handleNavigation = (id: string) => {
+    const handleNavigation = (id?: string) => {
         router.push(`/notes/${id}`);
     };
 
@@ -64,20 +66,20 @@ const Home = (props: Props) => {
         router.replace(router.asPath);
     };
 
-    const handleCopy = async (id: string) => {
-        const note = await copyNote(id);
+    const handleCopy = async (id?: string) => {
+        const note = await noteService.copyNote(id as string);
         handleNavigation(note._id);
     };
 
     const getJsonFromN = (n: INote) => {
-        const jsonObj = (n.note !== '' && validateJson(n.note)) ? JSON.parse(n.note) : [];
+        const jsonObj = (n.note && validateJson(n.note)) ? JSON.parse(n.note) : [];
         const settings = [StarterKit, Link, Underline, TaskList, TaskItem, Table, TableCell, TableHeader, TableRow];
         const html = generateHTML({ type: 'doc', content: jsonObj }, settings);
         return html;
     };
 
     return (
-        <NoteLayout notes={props.notes}>
+        <NoteLayout notes={props.notes as INoteTitleOnly[]}>
             <Container size="lg" px="xs">
                 <Grid>
                     {props.notes.map(n => (

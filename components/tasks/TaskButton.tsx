@@ -13,7 +13,7 @@ export const TaskButton = (props: TaskButtonProps) => {
 
     const handleRowClick = () => {
         setLoading(true);
-        props.handleRowClick(props.task._id)
+        props.handleRowClick(props.task._id as string)
             .then(() => setLoading(false));
 
     };
