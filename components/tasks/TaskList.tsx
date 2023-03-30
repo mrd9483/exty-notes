@@ -10,9 +10,10 @@ import TaskService from '@/services/TaskService';
 type Props = {
     showComplete?: boolean,
     categories: string[],
+    displayOnly?: boolean,
 }
 
-export const TaskList_v2 = (props: Props) => {
+export const TaskList = (props: Props) => {
 
     const [data, setData] = useState<ITask[]>([]);
     const [addLoading, setAddLoading] = useState(false);
@@ -81,13 +82,15 @@ export const TaskList_v2 = (props: Props) => {
             <Center><Loader size="xl" /></Center>
         }
         <Table>
-            <thead>
-                <tr>
-                    <th style={{ width: 50 }}>&nbsp;</th>
-                    <th>Task</th>
-                    <th>Category</th>
-                </tr>
-            </thead>
+            {!props.displayOnly && (
+                <thead>
+                    <tr>
+                        <th style={{ width: 50 }}>&nbsp;</th>
+                        <th>Task</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+            )}
             <tbody>
                 {data.map((d: ITask) => (
                     <tr key={d._id} >
@@ -104,16 +107,18 @@ export const TaskList_v2 = (props: Props) => {
                 ))}
             </tbody>
         </Table>
-        <Grid mt="md">
-            <Grid.Col span={6}>
-                <TextInput {...form.getInputProps('task')} onKeyDown={handleEnter} placeholder="Task" />
-            </Grid.Col>
-            <Grid.Col ta='right' span={3}>
-                <Select {...form.getInputProps('taskType')} data={props.categories} placeholder='Select category' />
-            </Grid.Col>
-            <Grid.Col ta='right' span={3}>
-                <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient">Add</Button>
-            </Grid.Col>
-        </Grid>
+        {!props.displayOnly && (
+            <Grid mt="md">
+                <Grid.Col span={6}>
+                    <TextInput {...form.getInputProps('task')} onKeyDown={handleEnter} placeholder="Task" />
+                </Grid.Col>
+                <Grid.Col ta='right' span={3}>
+                    <Select {...form.getInputProps('taskType')} data={props.categories} placeholder='Select category' />
+                </Grid.Col>
+                <Grid.Col ta='right' span={3}>
+                    <Button loading={addLoading} onClick={handleAdd} sx={{ width: '100%' }} variant="gradient">Add</Button>
+                </Grid.Col>
+            </Grid>
+        )}
     </>);
 };

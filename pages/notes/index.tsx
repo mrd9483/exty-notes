@@ -1,26 +1,14 @@
-import { NoteLayout } from '@/components/layouts/NoteLayout';
-import { ActionIcon, Box, Button, Card, Center, Container, Grid, Group, Modal, Text, validateJson } from '@mantine/core';
+import { NoNoteLayout } from '@/components/layouts/NoNoteLayout';
+import { Button, Center, Group, Modal, Text } from '@mantine/core';
 import { GetServerSideProps } from 'next';
-import { IconCopy, IconTrash } from '@tabler/icons';
 import { MouseEvent, useState } from 'react';
-import { INote, INoteTitleOnly } from '@/data/models/Note';
+import { INoteTitleOnly } from '@/data/models/Note';
 import { useRouter } from 'next/router';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth/next';
-import { generateHTML } from '@tiptap/html';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
-import Underline from '@tiptap/extension-underline';
 
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import Table from '@tiptap/extension-table';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import TableRow from '@tiptap/extension-table-row';
-
-import _ from 'lodash';
 import NoteService from '@/services/NoteService';
+import NoteList from '@/components/notes/NoteList';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
@@ -29,13 +17,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
         props:
         {
-            notes: await noteService.queryByUserId(session?.user.id as string),
+            notes: await noteService.queryByUserId(session?.user.id as string, { titlesOnly: true }),
         },
     };
 };
 
 type Props = {
-    notes: Array<INote>
+    notes: Array<INoteTitleOnly>
 }
 
 const Home = (props: Props) => {
@@ -61,7 +49,7 @@ const Home = (props: Props) => {
     };
 
     const handleDelete = async () => {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notes/${idToDelete}`, { method: 'DELETE' }).then(res => res.json());
+        await noteService.delete(idToDelete);
         handleClose();
         router.replace(router.asPath);
     };
@@ -71,45 +59,9 @@ const Home = (props: Props) => {
         handleNavigation(note._id);
     };
 
-    const getJsonFromN = (n: INote) => {
-        const jsonObj = (n.note && validateJson(n.note)) ? JSON.parse(n.note) : [];
-        const settings = [StarterKit, Link, Underline, TaskList, TaskItem, Table, TableCell, TableHeader, TableRow];
-        const html = generateHTML({ type: 'doc', content: jsonObj }, settings);
-        return html;
-    };
-
     return (
-        <NoteLayout notes={props.notes as INoteTitleOnly[]}>
-            <Container size="lg" px="xs">
-                <Grid>
-                    {props.notes.map(n => (
-                        <Grid.Col sx={{
-                            cursor: 'pointer',
-                        }} onClick={() => handleNavigation(n._id)} key={n._id} sm={6} md={4} span={12}>
-                            <Card withBorder shadow="sm" radius="md">
-                                <Card.Section withBorder inheritPadding py="xs">
-                                    <Group position="apart">
-                                        <Text weight={500}>{_.truncate(n.title, { length: 30 })}</Text>
-                                        <Group spacing="xs">
-                                            <ActionIcon onClick={() => handleCopy(n._id)}>
-                                                <IconCopy size={18} />
-                                            </ActionIcon>
-                                            <ActionIcon onClick={(e) => handleDeleteModal(e, n._id)}>
-                                                <IconTrash size={18} />
-                                            </ActionIcon>
-                                        </Group>
-                                    </Group>
-                                </Card.Section>
-                                <Box mt="sm" color="dimmed" h={200}>
-                                    <Text size={12}>
-                                        <div dangerouslySetInnerHTML={{ __html: getJsonFromN(n) }}></div>
-                                    </Text>
-                                </Box>
-                            </Card>
-                        </Grid.Col>
-                    ))}
-                </Grid>
-            </Container>
+        <NoNoteLayout>
+            <NoteList notes={props.notes} handleCopy={handleCopy} handleDeleteModal={handleDeleteModal} />
             <Modal
                 opened={opened}
                 onClose={handleClose}
@@ -118,7 +70,6 @@ const Home = (props: Props) => {
                 transitionDuration={600}
                 transitionTimingFunction="ease"
             >
-
                 <Text align='center' weight={500} mb="xl">Are you sure you would like to delete?</Text>
                 <Center>
                     <Group position='apart'>
@@ -127,7 +78,7 @@ const Home = (props: Props) => {
                     </Group>
                 </Center>
             </Modal>
-        </NoteLayout>
+        </NoNoteLayout>
     );
 };
 

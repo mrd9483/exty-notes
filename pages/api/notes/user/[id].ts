@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const GET = async () => {
 
         const proj = titlesOnly ? { title: true } : {};
-        const obj = await M.find({ user: id, active: true }, proj).exec();
+        const obj = await M.find({ user: id, active: true }, proj).sort({_id : -1}).exec();
         res.status(200).json(obj);
     };
 

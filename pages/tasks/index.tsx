@@ -1,5 +1,5 @@
 import { NoNoteLayout } from '@/components/layouts/NoNoteLayout';
-import { TaskList_v2 } from '@/components/tasks/TaskList_v2';
+import { TaskList } from '@/components/tasks/TaskList';
 import { Container, Tabs } from '@mantine/core';
 import { IconCheckbox, IconSquare } from '@tabler/icons';
 import { GetServerSideProps } from 'next';
@@ -43,7 +43,7 @@ const Task = (props: Props) => {
                         </Tabs.Tab>
                     </Tabs.List>
                 </Tabs>
-                <TaskList_v2 categories={props.currentUser?.options?.taskTypes ?? []} showComplete={tab === 'complete'} />
+                <TaskList categories={props.currentUser?.options?.taskTypes ?? []} showComplete={tab === 'complete'} />
             </Container>
         </NoNoteLayout>
     );

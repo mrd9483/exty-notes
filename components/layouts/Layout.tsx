@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import * as chrono from 'chrono-node';
 import { toast } from 'react-toastify';
 import { taskService, templateService, timeService } from '@/utils/listeners';
-import { TaskList_v2 } from '../tasks/TaskList_v2';
+import { TaskList } from '../tasks/TaskList';
 import Link from 'next/link';
 
 import TaskService from '@/services/TaskService';
@@ -195,7 +195,7 @@ export const Layout = (props: Props) => {
                 position="right"
                 styles={{ drawer: { overflowY: 'scroll' } }}
             >
-                <TaskList_v2 categories={[]} showComplete={false} />
+                <TaskList categories={[]} showComplete={false} />
             </Drawer>
         </AppShell>
     );
