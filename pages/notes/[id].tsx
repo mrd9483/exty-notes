@@ -128,7 +128,7 @@ const Page = (props: Props) => {
                 </MediaQuery>
                 <TextEditor editor={editor} />
             </Container>
-            <Box sx={{ position: 'absolute', bottom: '20px', right: '20px' }}>
+            <Box sx={{ position: 'fixed', bottom: '20px', right: '20px' }}>
                 <ThemeIcon hidden={!saveIndicator} radius="xl" size="xl" color="dark">
                     <IconDeviceFloppy />
                 </ThemeIcon>
