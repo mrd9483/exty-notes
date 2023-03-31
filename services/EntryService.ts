@@ -2,6 +2,7 @@ import { ITimeEntry } from '@/data/models/TimeEntry';
 import format from 'date-fns/format';
 import _, { Dictionary } from 'lodash';
 import { CrudUser } from './crud';
+import IParameters from '@/utils/IParameters';
 
 export type ITimeEntryReport = {
     date: string,
@@ -14,11 +15,11 @@ export default class EntryService extends CrudUser<ITimeEntry> {
     }
 
     async getEntries(userId: string, dateFrom?: Date | null, dateTo?: Date | null): Promise<ITimeEntry[]> {
-        const params = [];
+        const params: IParameters = {};
 
         if (dateFrom && dateTo) {
-            params.push(['dateFrom', dateFrom]);
-            params.push(['dateTo', dateFrom]);
+            params.dateFrom = format(dateFrom, 'yyyy-MM-dd');
+            params.dateTo = format(dateTo, 'yyyy-MM-dd');
         }
 
         return this.queryByUserId(userId, params);
@@ -28,7 +29,7 @@ export default class EntryService extends CrudUser<ITimeEntry> {
         return _.groupBy(entries, (e) => { return format(new Date(e.date), 'yyyy-MM-dd'); });
     }
 
-    static entryReport (entries: ITimeEntry[]): ITimeEntryReport[] {
+    static entryReport(entries: ITimeEntry[]): ITimeEntryReport[] {
         const entryGroupRetVal = EntryService.entryGroup(entries);
         const aggregate = _.map(Object.keys(entryGroupRetVal), (eg) => {
             return { date: eg, sum: _.sumBy(entryGroupRetVal[eg], (ent) => ent.hours) };
