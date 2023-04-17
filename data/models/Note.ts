@@ -3,7 +3,8 @@ import { IUserBase } from './Base';
 interface INote extends IUserBase {
     note?: string,
     title: string,
-    active?: boolean
+    active?: boolean,
+    tags?: string[]
 }
 
 interface INoteTitleOnly {
@@ -17,6 +18,7 @@ const noteSchema = new Schema({
     note: { type: String, default: '', require: false },
     title: String,
     active: { type: Boolean, default: true },
+    tags: [String],
 });
 
 const Note = models.Note || model<INote>('Note', noteSchema);

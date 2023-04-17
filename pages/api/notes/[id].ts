@@ -24,7 +24,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             n.note = req.body.note ?? n.note;
             n.slug = req.body.slug ?? n.slug;
             n.title = req.body.title ?? n.title;
-            
+            n.tags = req.body.tags ?? n.tags;
+
             res.status(200).json(await n.save());
         } else {
             res.status(404);

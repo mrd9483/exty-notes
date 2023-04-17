@@ -16,6 +16,7 @@ import getEditor from '@/utils/editor';
 import { templateService } from '@/utils/listeners';
 import { getTemplateByShortcut } from '@/services/templates';
 import NoteService from '@/services/NoteService';
+import { TagList } from '@/components/shared/taglist';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getServerSession(context.req, context.res, authOptions);
@@ -40,6 +41,8 @@ type Props = {
 
 const Page = (props: Props) => {
     const loaded = useRef(false);
+    const tagsLoaded = useRef(false);
+
     const noteService = new NoteService();
 
     const contentJson = (props.note.note && validateJson(props.note.note)) ? props.note.note : '[]';
@@ -70,19 +73,25 @@ const Page = (props: Props) => {
     const [modified, setModified] = useState(new Date());
     const [modifiedHuman, setModifiedHuman] = useState('');
     const [notesTitleOnly, setNotesTitleOnly] = useState<INoteTitleOnly[]>(props.notesTitleOnly);
+    const [tags, setTags] = useState(props.note.tags ?? []);
+
     const { data: session } = useSession();
+
+    const saveNote = () => {
+        setSaveIndicator(true);
+        noteService.update({ _id: noteId, user: props.userId, tags: tags, title: form.values.title, note: JSON.stringify(debouncedEditor?.toJSON()) })
+            .then((res) => {
+                setSaveIndicator(false);
+                setModified(new Date(res.updated as Date));
+            });
+    };
 
     useEffect(() => {
         if (!debouncedEditor)
             return;
 
         if (loaded.current) {
-            setSaveIndicator(true);
-            noteService.update({ _id: noteId, user: props.userId, title: form.values.title, note: JSON.stringify(debouncedEditor.toJSON()) })
-                .then((res) => {
-                    setSaveIndicator(false);
-                    setModified(new Date(res.updated as Date));
-                });
+            saveNote();
 
         } else {
             loaded.current = true;
@@ -107,6 +116,14 @@ const Page = (props: Props) => {
             });
     }, [debouncedTitle]);
 
+    const removeTag = (value: string) => {
+        setTags([...tags.filter(item => item !== value)]);
+    };
+
+    const addTag = (value: string) => {
+        setTags([...new Set([...tags, value])]);
+    };
+
     useEffect(() => {
         const interval = setInterval(() => {
             setModifiedHuman(formatDistanceToNow(modified, { includeSeconds: true }));
@@ -114,11 +131,22 @@ const Page = (props: Props) => {
         return () => clearInterval(interval);
     }, [modified]);
 
+    useEffect(() => {
+        if (tagsLoaded.current) {
+            saveNote();
+        } else {
+            tagsLoaded.current = true;
+        }
+    }, [tags]);
+
     return (
         <NoteLayout notes={notesTitleOnly}>
             <Container size="lg" px="xs">
                 <Box>
-                    <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" mb="xl" styles={() => ({ input: { height: '35px', borderBottom: '1px solid', fontWeight: 'bold' } })} radius="xs" size="xl" />
+                    <Input variant="unstyled" {...form.getInputProps('title')} placeholder="Title" styles={() => ({ input: { height: '35px', borderBottom: '1px solid', fontWeight: 'bold' } })} radius="xs" size="xl" />
+                </Box>
+                <Box my="md">
+                    <TagList values={tags} add={addTag} remove={removeTag} />
                 </Box>
                 <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
                     <Group position='apart'>
